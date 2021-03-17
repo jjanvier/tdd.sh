@@ -33,6 +33,18 @@ func TestLoad(t *testing.T) {
 	assert.Equal(t, expected, actual)
 }
 
+func TestGetCommand(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120}
+	conf.Aliases = aliases
+
+	expected := Command{"command1", []string{"arg1", "arg2", "--opt1"}}
+	actual := conf.GetCommand("foo")
+
+	assert.Equal(t, expected, actual)
+}
+
 func createTmpFile(content string) *os.File {
 	data := []byte(content)
 	tmpfile, err := ioutil.TempFile("/tmp", "tdd.sh-")

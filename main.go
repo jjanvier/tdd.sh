@@ -1,10 +1,9 @@
 package main
 
-import "fmt"
-
 func main() {
-	fmt.Println(Hello("John"))
-	fmt.Println(Hello("Mary"))
+	conf := Load(".tdd.yml")
+	cmd := conf.GetCommand("ut")
+	cmd.Execute()
 }
 
 func Hello(name string) string {
