@@ -1,6 +1,7 @@
 package main
 
 import (
+	"errors"
 	"io/ioutil"
 	"log"
 	"strings"
@@ -29,9 +30,14 @@ func Load(path string) Configuration {
 	return conf
 }
 
-func (conf Configuration) GetCommand(alias string) Command {
+func (conf Configuration) GetCommand(alias string) (Command, error) {
+
+	if _, ok := conf.Aliases[alias]; !ok {
+		return Command{}, errors.New("The alias '" + alias + "' does not exist.")
+	}
+
 	cmd := conf.Aliases[alias].Command
 	args := strings.Fields(cmd)
 
-	return Command{args[0], args[1:]}
+	return Command{args[0], args[1:]}, nil
 }

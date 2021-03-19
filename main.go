@@ -1,9 +1,20 @@
 package main
 
+import (
+	"log"
+	"os"
+)
+
+const configurationFile = ".tdd.yml"
+
 func main() {
-	conf := Load(".tdd.yml")
-	cmd := conf.GetCommand("ut")
-	cmd.Execute()
+	alias := os.Args[1]
+	conf := Load(configurationFile)
+	cmd, err := conf.GetCommand(alias)
+	if err != nil {
+		log.Fatal(err)
+	}
+	cmd.ExecuteWithOutput()
 }
 
 func Hello(name string) string {

@@ -20,6 +20,7 @@ func TestLoad(t *testing.T) {
 `
 
 	confFile := createTmpFile(confContent)
+	// TODO: use https://golang.org/pkg/testing/#B.Cleanup instead?
 	defer removeTmpFile(confFile)
 
 	actual := Load(confFile.Name())
@@ -40,9 +41,16 @@ func TestGetCommand(t *testing.T) {
 	conf.Aliases = aliases
 
 	expected := Command{"command1", []string{"arg1", "arg2", "--opt1"}}
-	actual := conf.GetCommand("foo")
+	actual, _ := conf.GetCommand("foo")
 
 	assert.Equal(t, expected, actual)
+}
+
+func TestGetCommandAliasNotFound(t *testing.T) {
+	conf := Configuration{}
+	_, actualError := conf.GetCommand("foo")
+
+	assert.Error(t, actualError)
 }
 
 func createTmpFile(content string) *os.File {
