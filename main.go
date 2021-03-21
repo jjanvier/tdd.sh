@@ -10,11 +10,12 @@ const configurationFile = ".tdd.yml"
 func main() {
 	alias := os.Args[1]
 	conf := Load(configurationFile)
-	cmd, err := conf.GetCommand(alias)
+	testCmd, err := conf.GetCommand(alias)
 	if err != nil {
 		log.Fatal(err)
 	}
-	cmd.ExecuteWithOutput()
+	handler := AliasHandler{CommandExecutor{}, CommandFactory{}, ExecutionResultFactory{}}
+	handler.HandleTestCommand(testCmd)
 }
 
 func Hello(name string) string {
