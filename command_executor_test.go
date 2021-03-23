@@ -45,8 +45,14 @@ func TestCreateGitAddCommand(t *testing.T) {
 	assert.Equal(t, "git add .", cmd.String())
 }
 
-func TestCreateGitACommit(t *testing.T) {
+func TestCreateGitCommit(t *testing.T) {
 	factory := CommandFactory{}
 	cmd := factory.CreateGitCommit()
 	assert.Equal(t, "git commit --reuse-message=HEAD", cmd.String())
+}
+
+func TestCreateGitCommitEmpty(t *testing.T) {
+	factory := CommandFactory{}
+	cmd := factory.CreateGitCommitEmpty("my beautiful commit message")
+	assert.Equal(t, "git commit --allow-empty -m my beautiful commit message", cmd.String())
 }

@@ -54,6 +54,16 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	assert.Equal(t, 1, result.ExitCode)
 }
 
+func TestHandleNew(t *testing.T) {
+	executor := new(successCommandExecutorMock)
+
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}}
+	result := handler.HandleNew("here is my commit message")
+
+	assert.Equal(t, "git commit --allow-empty -m here is my commit message", result.Command)
+	assert.Equal(t, 0, result.ExitCode)
+}
+
 func TestCreateExecutionResultGreen(t *testing.T) {
 	factory := ExecutionResultFactory{}
 	result := factory.CreateExecutionResultGreen([]Command{

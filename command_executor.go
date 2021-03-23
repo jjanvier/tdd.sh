@@ -28,6 +28,10 @@ func (factory CommandFactory) CreateGitCommit() Command {
 	return Command{"git", []string{"commit", "--reuse-message=HEAD"}}
 }
 
+func (factory CommandFactory) CreateGitCommitEmpty(message string) Command {
+	return Command{"git", []string{"commit", "--allow-empty", "-m", message}}
+}
+
 func (cmd Command) String() string {
 	return strings.Join(append([]string{cmd.Name}, cmd.Arguments...), " ")
 }

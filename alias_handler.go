@@ -26,6 +26,11 @@ func (factory ExecutionResultFactory) joinCommands(cmds []Command) string {
 	return strings.Join(cmdsString, " && ")
 }
 
+type AliasHandlerI interface {
+	HandleTestCommand(testCmd Command) ExecutionResult
+	HandleNew(message string) ExecutionResult
+}
+
 type AliasHandler struct {
 	executor CommandExecutorI
 	commandFactory CommandFactory
@@ -45,4 +50,11 @@ func (handler AliasHandler) HandleTestCommand(testCmd Command) ExecutionResult {
 	}
 
 	return handler.executionResultFactory.CreateExecutionResultGreen([]Command{testCmd, gitAddCmd, gitCommitCmd})
+}
+
+func (handler AliasHandler) HandleNew(message string) ExecutionResult {
+	cmd := handler.commandFactory.CreateGitCommitEmpty(message)
+	handler.executor.Execute(cmd)
+
+	return handler.executionResultFactory.CreateExecutionResultGreen([]Command{cmd})
 }
