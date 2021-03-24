@@ -17,6 +17,8 @@ func TestLoad(t *testing.T) {
   bar:
     command: command2
     timer: 500
+    git:
+      amend: true
 `
 
 	confFile := createTmpFile(confContent)
@@ -26,8 +28,8 @@ func TestLoad(t *testing.T) {
 	actual := Load(confFile.Name())
 
 	expectedAliases := make(map[string]Alias)
-	expectedAliases["foo"] = Alias{"command1", 120}
-	expectedAliases["bar"] = Alias{"command2", 500}
+	expectedAliases["foo"] = Alias{"command1", 120, Git{false}}
+	expectedAliases["bar"] = Alias{"command2", 500, Git{true}}
 	expected := Configuration{}
 	expected.Aliases = expectedAliases
 
@@ -37,7 +39,7 @@ func TestLoad(t *testing.T) {
 func TestGetCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120}
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
 	conf.Aliases = aliases
 
 	expected := Command{"command1", []string{"arg1", "arg2", "--opt1"}}
@@ -50,6 +52,27 @@ func TestGetCommandAliasNotFound(t *testing.T) {
 	conf := Configuration{}
 	_, actualError := conf.GetCommand("foo")
 
+	assert.Error(t, actualError)
+}
+
+func TestShouldAmendCommits(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
+	aliases["bar"] = Alias{"command2", 60, Git{true}}
+	conf.Aliases = aliases
+
+	notAmended, _ := conf.ShouldAmendCommits("foo")
+	assert.False(t, notAmended)
+
+	amended, _ := conf.ShouldAmendCommits("bar")
+	assert.True(t, amended)
+}
+
+func TestShouldAmendCommitsAliasNotFound(t *testing.T) {
+	conf := Configuration{}
+
+	_, actualError := conf.ShouldAmendCommits("foo")
 	assert.Error(t, actualError)
 }
 

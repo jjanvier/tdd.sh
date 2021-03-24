@@ -1,6 +1,8 @@
 package main
 
-import "strings"
+import (
+	"strings"
+)
 
 type ExecutionResult struct {
 	IsSuccess bool
@@ -27,8 +29,8 @@ func (factory ExecutionResultFactory) joinCommands(cmds []Command) string {
 }
 
 type AliasHandlerI interface {
-	HandleTestCommand(testCmd Command) ExecutionResult
-	HandleNew(message string) ExecutionResult
+	HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error)
+	HandleNew(message string) (ExecutionResult, error)
 }
 
 type AliasHandler struct {
@@ -37,24 +39,36 @@ type AliasHandler struct {
 	executionResultFactory ExecutionResultFactory
 }
 
-func (handler AliasHandler) HandleTestCommand(testCmd Command) ExecutionResult {
+func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error) {
+	testCmd, err := conf.GetCommand(alias)
+	if err != nil {
+		return ExecutionResult{}, err
+	}
+
 	gitAddCmd := handler.commandFactory.CreateGitAdd()
 	gitCommitCmd := handler.commandFactory.CreateGitCommit()
+	if amend, _ := conf.ShouldAmendCommits(alias); amend {
+		gitCommitCmd = handler.commandFactory.CreateGitCommitAmend()
+	}
 
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd})
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}
 
-	if handler.executor.ExecuteWithOutput(gitAddCmd) != nil || handler.executor.ExecuteWithOutput(gitCommitCmd) != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd})
+	if err := handler.executor.ExecuteWithOutput(gitAddCmd); err != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd}), err
 	}
 
-	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{testCmd, gitAddCmd, gitCommitCmd})
+	if err := handler.executor.ExecuteWithOutput(gitCommitCmd); err != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), err
+	}
+
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 }
 
-func (handler AliasHandler) HandleNew(message string) ExecutionResult {
+func (handler AliasHandler) HandleNew(message string) (ExecutionResult, error) {
 	cmd := handler.commandFactory.CreateGitCommitEmpty(message)
-	handler.executor.Execute(cmd)
+	err := handler.executor.Execute(cmd)
 
-	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{cmd})
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{cmd}), err
 }

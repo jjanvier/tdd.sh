@@ -9,9 +9,14 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+type Git struct {
+	Amend bool
+}
+
 type Alias struct {
 	Command string
 	Timer   int
+	Git Git
 }
 
 type Configuration struct {
@@ -31,7 +36,6 @@ func Load(path string) Configuration {
 }
 
 func (conf Configuration) GetCommand(alias string) (Command, error) {
-
 	if _, ok := conf.Aliases[alias]; !ok {
 		return Command{}, errors.New("The alias '" + alias + "' does not exist.")
 	}
@@ -40,4 +44,12 @@ func (conf Configuration) GetCommand(alias string) (Command, error) {
 	args := strings.Fields(cmd)
 
 	return Command{args[0], args[1:]}, nil
+}
+
+func (conf Configuration) ShouldAmendCommits(alias string) (bool, error) {
+	if _, ok := conf.Aliases[alias]; !ok {
+		return false, errors.New("The alias '" + alias + "' does not exist.")
+	}
+
+	return conf.Aliases[alias].Git.Amend, nil
 }

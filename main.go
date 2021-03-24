@@ -15,7 +15,7 @@ func main() {
 	Tdd(alias, conf, handler)
 }
 
-func Tdd(alias string, conf Configuration, handler AliasHandlerI) ExecutionResult {
+func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResult, error) {
 	if "new" == alias {
 		if len(os.Args) < 3 {
 			log.Fatal("No commit message given. Aborting.")
@@ -24,12 +24,7 @@ func Tdd(alias string, conf Configuration, handler AliasHandlerI) ExecutionResul
 		return handler.HandleNew(os.Args[2])
 	}
 
-	testCmd, err := conf.GetCommand(alias)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	return handler.HandleTestCommand(testCmd)
+	return handler.HandleTestCommand(conf, alias)
 }
 
 func Hello(name string) string {

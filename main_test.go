@@ -11,22 +11,22 @@ type aliasHandlerMock struct {
 	mock.Mock
 }
 
-func (m *aliasHandlerMock) HandleTestCommand(testCmd Command) ExecutionResult {
+func (m *aliasHandlerMock) HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error) {
 	m.Called()
 
-	return ExecutionResult{}
+	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleNew(message string) ExecutionResult {
+func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 	m.Called()
 
-	return ExecutionResult{}
+	return ExecutionResult{}, nil
 }
 
 func TestTddItHandlesTestCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120}
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
 	conf.Aliases = aliases
 
 	handler := new(aliasHandlerMock)

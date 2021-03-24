@@ -56,3 +56,9 @@ func TestCreateGitCommitEmpty(t *testing.T) {
 	cmd := factory.CreateGitCommitEmpty("my beautiful commit message")
 	assert.Equal(t, "git commit --allow-empty -m my beautiful commit message", cmd.String())
 }
+
+func TestCreateGitCommitAmend(t *testing.T) {
+	factory := CommandFactory{}
+	cmd := factory.CreateGitCommitAmend()
+	assert.Equal(t, "git commit --amend --no-edit", cmd.String())
+}
