@@ -3,18 +3,18 @@ package main
 import "strings"
 
 type ExecutionResult struct {
-	ExitCode int
-	Command  string
+	IsSuccess bool
+	Command   string
 }
 
 type ExecutionResultFactory struct {}
 
-func (factory ExecutionResultFactory) CreateExecutionResultGreen(cmds []Command) ExecutionResult {
-	return ExecutionResult{0, factory.joinCommands(cmds)}
+func (factory ExecutionResultFactory) CreateExecutionResultSuccess(cmds []Command) ExecutionResult {
+	return ExecutionResult{true, factory.joinCommands(cmds)}
 }
 
-func (factory ExecutionResultFactory) CreateExecutionResultRed(cmds []Command) ExecutionResult {
-	return ExecutionResult{1, factory.joinCommands(cmds)}
+func (factory ExecutionResultFactory) CreateExecutionResultFailure(cmds []Command) ExecutionResult {
+	return ExecutionResult{false, factory.joinCommands(cmds)}
 }
 
 func (factory ExecutionResultFactory) joinCommands(cmds []Command) string {
@@ -42,19 +42,19 @@ func (handler AliasHandler) HandleTestCommand(testCmd Command) ExecutionResult {
 	gitCommitCmd := handler.commandFactory.CreateGitCommit()
 
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
-		return handler.executionResultFactory.CreateExecutionResultRed([]Command{testCmd, gitAddCmd, gitCommitCmd})
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd})
 	}
 
 	if handler.executor.ExecuteWithOutput(gitAddCmd) != nil || handler.executor.ExecuteWithOutput(gitCommitCmd) != nil {
-		return handler.executionResultFactory.CreateExecutionResultRed([]Command{testCmd, gitAddCmd, gitCommitCmd})
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd})
 	}
 
-	return handler.executionResultFactory.CreateExecutionResultGreen([]Command{testCmd, gitAddCmd, gitCommitCmd})
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{testCmd, gitAddCmd, gitCommitCmd})
 }
 
 func (handler AliasHandler) HandleNew(message string) ExecutionResult {
 	cmd := handler.commandFactory.CreateGitCommitEmpty(message)
 	handler.executor.Execute(cmd)
 
-	return handler.executionResultFactory.CreateExecutionResultGreen([]Command{cmd})
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{cmd})
 }

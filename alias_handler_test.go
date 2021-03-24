@@ -40,7 +40,7 @@ func TestHandleAliasCommandWhenTestsPass(t *testing.T) {
 	result := handler.HandleTestCommand(cmd)
 
 	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
-	assert.Equal(t, 0, result.ExitCode)
+	assert.Equal(t, true, result.IsSuccess)
 }
 
 func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
@@ -51,7 +51,7 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	result := handler.HandleTestCommand(cmd)
 
 	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
-	assert.Equal(t, 1, result.ExitCode)
+	assert.Equal(t, false, result.IsSuccess)
 }
 
 func TestHandleNew(t *testing.T) {
@@ -61,27 +61,27 @@ func TestHandleNew(t *testing.T) {
 	result := handler.HandleNew("here is my commit message")
 
 	assert.Equal(t, "git commit --allow-empty -m here is my commit message", result.Command)
-	assert.Equal(t, 0, result.ExitCode)
+	assert.Equal(t, true, result.IsSuccess)
 }
 
-func TestCreateExecutionResultGreen(t *testing.T) {
+func TestCreateExecutionResultSuccess(t *testing.T) {
 	factory := ExecutionResultFactory{}
-	result := factory.CreateExecutionResultGreen([]Command{
+	result := factory.CreateExecutionResultSuccess([]Command{
 		{"toto", []string{"titi", "--tata"}},
 		{"foo", []string{"bar", "baz"}},
 	})
 
 	assert.Equal(t, "toto titi --tata && foo bar baz", result.Command)
-	assert.Equal(t, 0, result.ExitCode)
+	assert.Equal(t, true, result.IsSuccess)
 }
 
-func TestCreateExecutionResultRed(t *testing.T) {
+func TestCreateExecutionResultFailure(t *testing.T) {
 	factory := ExecutionResultFactory{}
-	result := factory.CreateExecutionResultRed([]Command{
+	result := factory.CreateExecutionResultFailure([]Command{
 		{"toto", []string{"titi", "--tata"}},
 		{"foo", []string{"bar", "baz"}},
 	})
 
 	assert.Equal(t, "toto titi --tata && foo bar baz", result.Command)
-	assert.Equal(t, 1, result.ExitCode)
+	assert.Equal(t, false, result.IsSuccess)
 }
