@@ -37,6 +37,7 @@ type AliasHandler struct {
 	executor CommandExecutorI
 	commandFactory CommandFactory
 	executionResultFactory ExecutionResultFactory
+	notificationsCenter NotificationCenterI
 }
 
 func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error) {
@@ -52,6 +53,7 @@ func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) 
 	}
 
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
+		handler.notificationsCenter.Alert("tests are red!")
 		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}
 

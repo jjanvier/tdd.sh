@@ -10,7 +10,7 @@ const configurationFile = ".tdd.yml"
 func main() {
 	alias := os.Args[1]
 	conf := Load(configurationFile)
-	handler := AliasHandler{CommandExecutor{}, CommandFactory{}, ExecutionResultFactory{}}
+	handler := AliasHandler{CommandExecutor{}, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{}}
 
 	Tdd(alias, conf, handler)
 }
