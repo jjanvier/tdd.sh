@@ -6,11 +6,14 @@ import (
 )
 
 const configurationFile = ".tdd.yml"
+const pidFile = "/tmp/tdd.sh-pid"
 
 func main() {
 	alias := os.Args[1]
 	conf := Load(configurationFile)
-	handler := AliasHandler{CommandExecutor{}, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{}}
+	executor := CommandExecutor{}
+	notificationsCenter := NotificationsCenter{executor, pidFile}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, notificationsCenter}
 
 	Tdd(alias, conf, handler)
 }

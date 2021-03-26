@@ -4,6 +4,8 @@ import (
 	"strings"
 )
 
+const notificationMessage = "The time is up and the tests are still red! Maybe you should reset your changes and take a smaller step?"
+
 type ExecutionResult struct {
 	IsSuccess bool
 	Command   string
@@ -52,8 +54,11 @@ func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) 
 		gitCommitCmd = handler.commandFactory.CreateGitCommitAmend()
 	}
 
+	handler.notificationsCenter.Reset()
+
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
-		handler.notificationsCenter.Alert("tests are red!")
+		timer, _ := conf.GetTimer(alias)
+		handler.notificationsCenter.NotifyWithDelay(timer, notificationMessage)
 		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}
 

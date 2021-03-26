@@ -9,6 +9,7 @@ import (
 type CommandExecutorI interface {
 	ExecuteWithOutput(cmd Command) error
 	Execute(cmd Command) error
+	ExecuteBackground(cmd Command) (int, error)
 }
 
 type CommandExecutor struct {}
@@ -60,4 +61,14 @@ func (executor CommandExecutor) Execute(cmd Command) error {
 	}
 
 	return nil
+}
+
+func (executor CommandExecutor) ExecuteBackground(cmd Command) (int, error) {
+	c := exec.Command(cmd.Name, cmd.Arguments...)
+	err := c.Start()
+	if err != nil {
+		return -1, err
+	}
+
+	return c.Process.Pid, nil
 }

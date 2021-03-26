@@ -76,6 +76,24 @@ func TestShouldAmendCommitsAliasNotFound(t *testing.T) {
 	assert.Error(t, actualError)
 }
 
+func TestGetTimer(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
+	conf.Aliases = aliases
+
+	actualTimer, _ := conf.GetTimer("foo")
+	assert.Equal(t, 120, actualTimer)
+}
+
+
+func TestGetTimerAliasNotFound(t *testing.T) {
+	conf := Configuration{}
+
+	_, actualError := conf.GetTimer("foo")
+	assert.Error(t, actualError)
+}
+
 func createTmpFile(content string) *os.File {
 	data := []byte(content)
 	tmpfile, err := ioutil.TempFile("/tmp", "tdd.sh-")

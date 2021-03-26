@@ -53,3 +53,11 @@ func (conf Configuration) ShouldAmendCommits(alias string) (bool, error) {
 
 	return conf.Aliases[alias].Git.Amend, nil
 }
+
+func (conf Configuration) GetTimer(alias string) (int, error) {
+	if _, ok := conf.Aliases[alias]; !ok {
+		return 0, errors.New("The alias '" + alias + "' does not exist.")
+	}
+
+	return conf.Aliases[alias].Timer, nil
+}
