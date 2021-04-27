@@ -3,7 +3,6 @@ package main
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 )
 
@@ -42,8 +41,4 @@ func TestTddItHandlesNewCommand(t *testing.T) {
 	handler.On("HandleNew").Once()
 
 	Tdd("new", conf, handler)
-}
-
-func TestHello(t *testing.T) {
-	assert.Equal(t, "Hello foo", Hello("foo"))
 }

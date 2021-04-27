@@ -29,7 +29,3 @@ func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResu
 
 	return handler.HandleTestCommand(conf, alias)
 }
-
-func Hello(name string) string {
-	return "Hello " + name
-}
