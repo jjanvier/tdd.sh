@@ -46,11 +46,11 @@ type notificationsCenterMock struct {
 	mock.Mock
 }
 
-func (center *notificationsCenterMock) NotifyWithDelay(delay int, message string) {
+func (center *notificationsCenterMock) NotifyWithDelay(alias string, delay int, message string) {
 	center.Called()
 }
 
-func (center *notificationsCenterMock) Reset() {
+func (center *notificationsCenterMock) Reset(alias string) {
 	center.Called()
 }
 

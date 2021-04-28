@@ -9,6 +9,15 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
+// The configuration file should be like:
+//
+// aliases:
+//   ut:
+//     command: go test -v
+//     timer: 120
+//     git:
+//     amend: true
+
 type Git struct {
 	Amend bool
 }

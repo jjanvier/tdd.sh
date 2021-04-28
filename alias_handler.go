@@ -54,11 +54,11 @@ func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) 
 		gitCommitCmd = handler.commandFactory.CreateGitCommitAmend()
 	}
 
-	handler.notificationsCenter.Reset()
+	handler.notificationsCenter.Reset(alias)
 
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
 		timer, _ := conf.GetTimer(alias)
-		handler.notificationsCenter.NotifyWithDelay(timer, notificationMessage)
+		handler.notificationsCenter.NotifyWithDelay(alias, timer, notificationMessage)
 		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}
 

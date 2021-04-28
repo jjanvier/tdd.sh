@@ -1,17 +1,15 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 	"strconv"
-	"strings"
 )
 
 const notificationPackage = "notification"
 
 type NotificationCenterI interface {
-	NotifyWithDelay(delay int, message string)
-	Reset()
+	NotifyWithDelay(alias string, delay int, message string)
+	Reset(alias string)
 }
 
 type NotificationsCenter struct {
@@ -19,45 +17,26 @@ type NotificationsCenter struct {
 	pidFileName string
 }
 
-func (center NotificationsCenter) NotifyWithDelay(delay int, message string) {
+func (center NotificationsCenter) NotifyWithDelay(alias string, delay int, message string) {
 	cmd := Command{notificationPackage, []string{strconv.Itoa(delay), message}}
 	pid, _ := center.executor.ExecuteBackground(cmd)
-	putPidToPidFile(center.pidFileName, pid)
+
+	timers := LoadTimers(center.pidFileName)
+	timers.UpsertPid(alias, pid)
+
+	SaveTimers(center.pidFileName, timers)
 }
 
-func (center NotificationsCenter) Reset() {
-	killPreviousNotification(center.pidFileName)
+func (center NotificationsCenter) Reset(alias string) {
+	timers := LoadTimers(center.pidFileName)
+	pid := timers.GetPid(alias)
+
+	killPreviousNotification(pid)
 }
 
-func killPreviousNotification(filename string) {
-	pid, err := getPidFromPidFile(filename)
-	if err != nil {
-		return
-	}
-
+func killPreviousNotification(pid int) {
 	process, err := os.FindProcess(pid)
 	if err == nil {
 		process.Kill()
 	}
-}
-
-func putPidToPidFile(filename string, pid int) {
-	pidFile, _ := os.OpenFile(filename, os.O_WRONLY|os.O_CREATE, 0600)
-	defer pidFile.Close()
-
-	pidFile.WriteString(strconv.Itoa(pid) + "\n")
-}
-
-func getPidFromPidFile(filename string) (int, error) {
-	pidByte, err := ioutil.ReadFile(filename)
-	if err != nil {
-		return 0, err
-	}
-
-	pid, err := strconv.Atoi(strings.TrimSpace(string(pidByte)))
-	if err != nil {
-		return 0, err
-	}
-
-	return pid, nil
 }
