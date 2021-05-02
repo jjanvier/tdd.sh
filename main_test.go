@@ -22,6 +22,12 @@ func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 	return ExecutionResult{}, nil
 }
 
+func (m *aliasHandlerMock) HandleTodo(message string) (ExecutionResult, error) {
+	m.Called()
+
+	return ExecutionResult{}, nil
+}
+
 func TestTddItHandlesTestCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
@@ -41,4 +47,13 @@ func TestTddItHandlesNewCommand(t *testing.T) {
 	handler.On("HandleNew").Once()
 
 	Tdd("new", conf, handler)
+}
+
+func TestTddItHandlesTodoCommand(t *testing.T) {
+	conf := Configuration{}
+
+	handler := new(aliasHandlerMock)
+	handler.On("HandleTodo").Once()
+
+	Tdd("todo", conf, handler)
 }

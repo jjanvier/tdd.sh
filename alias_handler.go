@@ -33,6 +33,7 @@ func (factory ExecutionResultFactory) joinCommands(cmds []Command) string {
 type AliasHandlerI interface {
 	HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error)
 	HandleNew(message string) (ExecutionResult, error)
+	HandleTodo(message string) (ExecutionResult, error)
 }
 
 type AliasHandler struct {
@@ -78,4 +79,8 @@ func (handler AliasHandler) HandleNew(message string) (ExecutionResult, error) {
 	err := handler.executor.Execute(cmd)
 
 	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{cmd}), err
+}
+
+func (handler AliasHandler) HandleTodo(message string) (ExecutionResult, error) {
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{}), nil
 }

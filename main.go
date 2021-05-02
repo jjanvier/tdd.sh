@@ -1,7 +1,6 @@
 package main
 
 import (
-	"log"
 	"os"
 )
 
@@ -20,11 +19,13 @@ func main() {
 
 func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResult, error) {
 	if "new" == alias {
-		if len(os.Args) < 3 {
-			log.Fatal("No commit message given. Aborting.")
-		}
-
+		// TODO: handle when there is no message
 		return handler.HandleNew(os.Args[2])
+	}
+
+	if "todo" == alias {
+		// TODO: handle when there is no message
+		return handler.HandleTodo(os.Args[2])
 	}
 
 	return handler.HandleTestCommand(conf, alias)
