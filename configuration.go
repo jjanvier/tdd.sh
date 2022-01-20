@@ -12,11 +12,11 @@ import (
 // The configuration file should be like:
 //
 // aliases:
-//   ut:
-//     command: go test -v
-//     timer: 120
-//     git:
-//     amend: true
+//     ut:
+//         command: go test -v
+//         git:
+//             amend: true
+//         timer: 120
 
 type Git struct {
 	Amend bool
@@ -25,7 +25,7 @@ type Git struct {
 type Alias struct {
 	Command string
 	Timer   int
-	Git Git
+	Git     Git
 }
 
 type Configuration struct {

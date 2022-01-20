@@ -7,10 +7,11 @@ import (
 )
 
 // The PID file should be like:
-//
-// pids:
-//   ut: 98745
-//   at: 466238
+/*
+pids:
+ut: 98745
+at: 466238
+*/
 
 type Timers struct {
 	Pids map[string]int
