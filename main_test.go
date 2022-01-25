@@ -22,7 +22,7 @@ func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleTodo(message string) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleTodo(message string, todoFilePath string) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil

@@ -4,6 +4,7 @@ import (
 	"errors"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
+	"io/ioutil"
 
 	"testing"
 )
@@ -139,4 +140,29 @@ func TestCreateExecutionResultFailure(t *testing.T) {
 
 	assert.Equal(t, "toto titi --tata && foo bar baz", result.Command)
 	assert.Equal(t, false, result.IsSuccess)
+}
+
+func TestHandleTodo(t *testing.T) {
+	executor := new(successCommandExecutorMock)
+
+	todoFile := createTmpFile("")
+	defer removeTmpFile(todoFile)
+
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
+	handler.HandleTodo("here is something I have to do later", todoFile.Name())
+
+	actual, _ := ioutil.ReadFile(todoFile.Name())
+	expected := `here is something I have to do later
+`
+
+	assert.Equal(t, expected, string(actual))
+
+	handler.HandleTodo("hmmmm, something else", todoFile.Name())
+
+	newActual, _ := ioutil.ReadFile(todoFile.Name())
+	newExpected := `here is something I have to do later
+hmmmm, something else
+`
+
+	assert.Equal(t, newExpected, string(newActual))
 }

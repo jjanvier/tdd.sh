@@ -1,6 +1,7 @@
 package main
 
 import (
+	"os"
 	"strings"
 )
 
@@ -11,7 +12,7 @@ type ExecutionResult struct {
 	Command   string
 }
 
-type ExecutionResultFactory struct {}
+type ExecutionResultFactory struct{}
 
 func (factory ExecutionResultFactory) CreateExecutionResultSuccess(cmds []Command) ExecutionResult {
 	return ExecutionResult{true, factory.joinCommands(cmds)}
@@ -33,14 +34,14 @@ func (factory ExecutionResultFactory) joinCommands(cmds []Command) string {
 type AliasHandlerI interface {
 	HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error)
 	HandleNew(message string) (ExecutionResult, error)
-	HandleTodo(message string) (ExecutionResult, error)
+	HandleTodo(message string, todoFile string) (ExecutionResult, error)
 }
 
 type AliasHandler struct {
-	executor CommandExecutorI
-	commandFactory CommandFactory
+	executor               CommandExecutorI
+	commandFactory         CommandFactory
 	executionResultFactory ExecutionResultFactory
-	notificationsCenter NotificationCenterI
+	notificationsCenter    NotificationCenterI
 }
 
 func (handler AliasHandler) HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error) {
@@ -81,6 +82,20 @@ func (handler AliasHandler) HandleNew(message string) (ExecutionResult, error) {
 	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{cmd}), err
 }
 
-func (handler AliasHandler) HandleTodo(message string) (ExecutionResult, error) {
-	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{}), nil
+func (handler AliasHandler) HandleTodo(message string, todoFilePath string) (ExecutionResult, error) {
+	fakeTodoCommand := Command{message, []string{}}
+	fakeTodoCommands := []Command{fakeTodoCommand}
+
+	todoFile, err := os.OpenFile(todoFilePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	defer todoFile.Close()
+	if err != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure(fakeTodoCommands), err
+	}
+
+	_, err2 := todoFile.WriteString(message + "\n")
+	if err2 != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure(fakeTodoCommands), err2
+	}
+
+	return handler.executionResultFactory.CreateExecutionResultSuccess(fakeTodoCommands), nil
 }

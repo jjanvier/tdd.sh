@@ -5,6 +5,7 @@ import (
 )
 
 const configurationFile = ".tdd.yml"
+const todoFile = ".tdd.todo"
 const pidFile = "/tmp/tdd.sh-pid"
 
 func main() {
@@ -25,7 +26,7 @@ func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResu
 
 	if "todo" == alias {
 		// TODO: handle when there is no message
-		return handler.HandleTodo(os.Args[2])
+		return handler.HandleTodo(os.Args[2], todoFile)
 	}
 
 	return handler.HandleTestCommand(conf, alias)
