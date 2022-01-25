@@ -1,6 +1,9 @@
 package main
 
 import (
+	"github.com/manifoldco/promptui"
+	"io"
+	"io/ioutil"
 	"os"
 	"strings"
 )
@@ -35,6 +38,7 @@ type AliasHandlerI interface {
 	HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error)
 	HandleNew(message string) (ExecutionResult, error)
 	HandleTodo(message string, todoFile string) (ExecutionResult, error)
+	HandleDo(todoFile string, stdin io.ReadCloser) (ExecutionResult, error)
 }
 
 type AliasHandler struct {
@@ -98,4 +102,27 @@ func (handler AliasHandler) HandleTodo(message string, todoFilePath string) (Exe
 	}
 
 	return handler.executionResultFactory.CreateExecutionResultSuccess(fakeTodoCommands), nil
+}
+
+func (handler AliasHandler) HandleDo(todoFilePath string, stdin io.ReadCloser) (ExecutionResult, error) {
+	todoContent, _ := ioutil.ReadFile(todoFilePath)
+	todoList := strings.Split(string(todoContent), "\n")
+
+	prompt := promptui.Select{
+		Label: "Here is your todo list, which task do you want to tackle?",
+		Items: todoList,
+		Stdin: stdin,
+	}
+
+	_, selected, err := prompt.Run()
+
+	if selected == "" {
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+	}
+
+	if err != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+	}
+
+	return handler.HandleNew(selected)
 }

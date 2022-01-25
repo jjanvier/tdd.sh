@@ -29,5 +29,9 @@ func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResu
 		return handler.HandleTodo(os.Args[2], todoFile)
 	}
 
+	if "do" == alias {
+		return handler.HandleDo(todoFile, os.Stdin)
+	}
+
 	return handler.HandleTestCommand(conf, alias)
 }

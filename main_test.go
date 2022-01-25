@@ -1,6 +1,7 @@
 package main
 
 import (
+	"io"
 	"testing"
 
 	"github.com/stretchr/testify/mock"
@@ -23,6 +24,12 @@ func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 }
 
 func (m *aliasHandlerMock) HandleTodo(message string, todoFilePath string) (ExecutionResult, error) {
+	m.Called()
+
+	return ExecutionResult{}, nil
+}
+
+func (m *aliasHandlerMock) HandleDo(todoFilePath string, stdin io.ReadCloser) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil

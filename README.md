@@ -128,7 +128,8 @@ TODO
 - ~~reset the timer when tests are green~~
 - ~~handle a TODO list with~~
   - ~~tdd todo : add an item in the list~~
-  - tdd do : pick one item in the list, and do a `tdd new` with it
+  - ~~tdd do : pick one item in the list, and do a `tdd new` with it~~
+  - tdd do: sanitize todo lists => remove empty lines
   - tdd done : clear the list
 - log properly debug/info/error, see https://www.honeybadger.io/blog/golang-logging/
 - display execution results like:
@@ -144,3 +145,4 @@ TODO
 - be able to define a default alias? 
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
+- use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra 
