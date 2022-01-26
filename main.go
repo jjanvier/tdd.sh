@@ -33,5 +33,9 @@ func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResu
 		return handler.HandleDo(todoFile, os.Stdin)
 	}
 
+	if "done" == alias {
+		return handler.HandleDone(todoFile)
+	}
+
 	return handler.HandleTestCommand(conf, alias)
 }

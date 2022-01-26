@@ -130,7 +130,7 @@ TODO
   - ~~tdd todo : add an item in the list~~
   - ~~tdd do : pick one item in the list, and do a `tdd new` with it~~
   - tdd do: sanitize todo lists => remove empty lines
-  - tdd done : clear the list
+  - ~~tdd done : clear the list~~
 - log properly debug/info/error, see https://www.honeybadger.io/blog/golang-logging/
 - display execution results like:
   - Tests pass ✅

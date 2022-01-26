@@ -189,6 +189,23 @@ really important to do that`)
 	assert.Equal(t, "git commit --allow-empty -m also this should be done", result.Command)
 }
 
+func TestHandleDone(t *testing.T) {
+	executor := new(successCommandExecutorMock)
+
+	todoFile := createTmpFile(`I should do that
+also this should be done
+really important to do that`)
+	defer removeTmpFile(todoFile)
+
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
+	result, _ := handler.HandleDone(todoFile.Name())
+
+	actual, _ := ioutil.ReadFile(todoFile.Name())
+
+	assert.Equal(t, true, result.IsSuccess)
+	assert.Equal(t, "", string(actual))
+}
+
 // to fake stdin, we can use a temporary file as explained here https://github.com/manifoldco/promptui/issues/63#issuecomment-496871005
 // to select the second option, our goal is to go down and press enter
 // to go down => key "j" (that's what uses manifoldco/promptui) => ascii "106"

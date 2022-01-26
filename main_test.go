@@ -35,6 +35,12 @@ func (m *aliasHandlerMock) HandleDo(todoFilePath string, stdin io.ReadCloser) (E
 	return ExecutionResult{}, nil
 }
 
+func (m *aliasHandlerMock) HandleDone(todoFilePath string) (ExecutionResult, error) {
+	m.Called()
+
+	return ExecutionResult{}, nil
+}
+
 func TestTddItHandlesTestCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)

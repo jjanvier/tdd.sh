@@ -39,6 +39,7 @@ type AliasHandlerI interface {
 	HandleNew(message string) (ExecutionResult, error)
 	HandleTodo(message string, todoFile string) (ExecutionResult, error)
 	HandleDo(todoFile string, stdin io.ReadCloser) (ExecutionResult, error)
+	HandleDone(todoFile string) (ExecutionResult, error)
 }
 
 type AliasHandler struct {
@@ -125,4 +126,15 @@ func (handler AliasHandler) HandleDo(todoFilePath string, stdin io.ReadCloser) (
 	}
 
 	return handler.HandleNew(selected)
+}
+
+func (handler AliasHandler) HandleDone(todoFilePath string) (ExecutionResult, error) {
+	todoFile, err := os.OpenFile(todoFilePath, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	defer todoFile.Close()
+
+	if err != nil {
+		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+	}
+
+	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{}), nil
 }
