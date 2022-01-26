@@ -23,19 +23,19 @@ func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleTodo(message string, todoFilePath string) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleTodo(message string) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleDo(todoFilePath string, stdin io.ReadCloser) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleDo(stdin io.ReadCloser) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleDone(todoFilePath string) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleDone() (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil

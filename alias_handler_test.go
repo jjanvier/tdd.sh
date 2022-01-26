@@ -66,7 +66,7 @@ func TestHandleAliasCommandWhenTestsPass(t *testing.T) {
 	center := new(notificationsCenterMock)
 	center.On("Reset").Once()
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center, TodoList{"/tmp/foo"}}
 	result, _ := handler.HandleTestCommand(conf, "foo")
 
 	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
@@ -84,7 +84,7 @@ func TestHandleAliasCommandWhenTestsPassAndCommitsAreAmended(t *testing.T) {
 	center := new(notificationsCenterMock)
 	center.On("Reset").Once()
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center, TodoList{"/tmp/foo"}}
 	result, _ := handler.HandleTestCommand(conf, "foo")
 
 	assert.Equal(t, "go test -v && git add . && git commit --amend --no-edit", result.Command)
@@ -103,7 +103,7 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	center.On("Reset").Once()
 	center.On("NotifyWithDelay").Once()
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, center, TodoList{"/tmp/foo"}}
 	result, _ := handler.HandleTestCommand(conf, "foo")
 
 	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
@@ -114,7 +114,7 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 func TestHandleNew(t *testing.T) {
 	executor := new(successCommandExecutorMock)
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}, TodoList{"/tmp/foo"}}
 	result, _ := handler.HandleNew("here is my commit message")
 
 	assert.Equal(t, "git commit --allow-empty -m here is my commit message", result.Command)
@@ -149,16 +149,16 @@ func TestHandleTodo(t *testing.T) {
 	todoFile := createTmpFile("")
 	defer removeTmpFile(todoFile)
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
-	handler.HandleTodo("here is something I have to do later", todoFile.Name())
+	todoList := TodoList{todoFile.Name()}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}, todoList}
+	handler.HandleTodo("here is something I have to do later")
 
 	actual, _ := ioutil.ReadFile(todoFile.Name())
 	expected := `here is something I have to do later
 `
-
 	assert.Equal(t, expected, string(actual))
 
-	handler.HandleTodo("hmmmm, something else", todoFile.Name())
+	handler.HandleTodo("hmmmm, something else")
 
 	newActual, _ := ioutil.ReadFile(todoFile.Name())
 	newExpected := `here is something I have to do later
@@ -182,8 +182,9 @@ really important to do that`)
 		os.Remove(fakeStdin.Name())
 	}()
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
-	result, _ := handler.HandleDo(todoFile.Name(), fakeStdin)
+	todoList := TodoList{todoFile.Name()}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}, todoList}
+	result, _ := handler.HandleDo(fakeStdin)
 
 	assert.Equal(t, true, result.IsSuccess)
 	assert.Equal(t, "git commit --allow-empty -m also this should be done", result.Command)
@@ -197,8 +198,9 @@ also this should be done
 really important to do that`)
 	defer removeTmpFile(todoFile)
 
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}}
-	result, _ := handler.HandleDone(todoFile.Name())
+	todoList := TodoList{todoFile.Name()}
+	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, NotificationsCenter{executor, "/tmp/tdd.sh-pid-test"}, todoList}
+	result, _ := handler.HandleDone()
 
 	actual, _ := ioutil.ReadFile(todoFile.Name())
 
