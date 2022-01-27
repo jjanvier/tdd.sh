@@ -107,7 +107,7 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 
 func TestCreateExecutionResultSuccess(t *testing.T) {
 	factory := ExecutionResultFactory{}
-	result := factory.CreateExecutionResultSuccess([]Command{
+	result := factory.success([]Command{
 		{"toto", []string{"titi", "--tata"}},
 		{"foo", []string{"bar", "baz"}},
 	})
@@ -118,7 +118,7 @@ func TestCreateExecutionResultSuccess(t *testing.T) {
 
 func TestCreateExecutionResultFailure(t *testing.T) {
 	factory := ExecutionResultFactory{}
-	result := factory.CreateExecutionResultFailure([]Command{
+	result := factory.failure([]Command{
 		{"toto", []string{"titi", "--tata"}},
 		{"foo", []string{"bar", "baz"}},
 	})

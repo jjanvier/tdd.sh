@@ -32,7 +32,7 @@ func (handler TodoHandler) HandleTodo(message string) error {
 func (handler TodoHandler) HandleDo(stdin io.ReadCloser) (ExecutionResult, error) {
 	todoList, err := handler.todo.GetItems()
 	if err != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+		return handler.executionResultFactory.failure([]Command{}), err
 	}
 
 	prompt := promptui.Select{
@@ -44,11 +44,11 @@ func (handler TodoHandler) HandleDo(stdin io.ReadCloser) (ExecutionResult, error
 	_, selected, err := prompt.Run()
 
 	if selected == "" {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+		return handler.executionResultFactory.failure([]Command{}), err
 	}
 
 	if err != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{}), err
+		return handler.executionResultFactory.failure([]Command{}), err
 	}
 
 	return handler.newHandler.HandleNew(selected)

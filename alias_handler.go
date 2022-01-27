@@ -13,11 +13,11 @@ type ExecutionResult struct {
 
 type ExecutionResultFactory struct{}
 
-func (factory ExecutionResultFactory) CreateExecutionResultSuccess(cmds []Command) ExecutionResult {
+func (factory ExecutionResultFactory) success(cmds []Command) ExecutionResult {
 	return ExecutionResult{true, factory.joinCommands(cmds)}
 }
 
-func (factory ExecutionResultFactory) CreateExecutionResultFailure(cmds []Command) ExecutionResult {
+func (factory ExecutionResultFactory) failure(cmds []Command) ExecutionResult {
 	return ExecutionResult{false, factory.joinCommands(cmds)}
 }
 
@@ -58,16 +58,16 @@ func (handler AliasHandler) HandleAlias(conf Configuration, alias string) (Execu
 	if handler.executor.ExecuteWithOutput(testCmd) != nil {
 		timer, _ := conf.GetTimer(alias)
 		handler.notificationsCenter.NotifyWithDelay(alias, timer, notificationMessage)
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
+		return handler.executionResultFactory.failure([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}
 
 	if err := handler.executor.ExecuteWithOutput(gitAddCmd); err != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd}), err
+		return handler.executionResultFactory.failure([]Command{testCmd, gitAddCmd}), err
 	}
 
 	if err := handler.executor.ExecuteWithOutput(gitCommitCmd); err != nil {
-		return handler.executionResultFactory.CreateExecutionResultFailure([]Command{testCmd, gitAddCmd, gitCommitCmd}), err
+		return handler.executionResultFactory.failure([]Command{testCmd, gitAddCmd, gitCommitCmd}), err
 	}
 
-	return handler.executionResultFactory.CreateExecutionResultSuccess([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
+	return handler.executionResultFactory.success([]Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 }
