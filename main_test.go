@@ -10,35 +10,41 @@ import (
 type aliasHandlerMock struct {
 	mock.Mock
 }
+type newHandlerMock struct {
+	mock.Mock
+}
+type todoHandlerMock struct {
+	mock.Mock
+}
 
-func (m *aliasHandlerMock) HandleTestCommand(conf Configuration, alias string) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleAlias(conf Configuration, alias string) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleNew(message string) (ExecutionResult, error) {
+func (m *newHandlerMock) HandleNew(message string) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleTodo(message string) (ExecutionResult, error) {
+func (m *todoHandlerMock) HandleTodo(message string) error {
+	m.Called()
+
+	return nil
+}
+
+func (m *todoHandlerMock) HandleDo(stdin io.ReadCloser) (ExecutionResult, error) {
 	m.Called()
 
 	return ExecutionResult{}, nil
 }
 
-func (m *aliasHandlerMock) HandleDo(stdin io.ReadCloser) (ExecutionResult, error) {
+func (m *todoHandlerMock) HandleDone() error {
 	m.Called()
 
-	return ExecutionResult{}, nil
-}
-
-func (m *aliasHandlerMock) HandleDone() (ExecutionResult, error) {
-	m.Called()
-
-	return ExecutionResult{}, nil
+	return nil
 }
 
 func TestTddItHandlesTestCommand(t *testing.T) {
@@ -47,26 +53,26 @@ func TestTddItHandlesTestCommand(t *testing.T) {
 	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
 	conf.Aliases = aliases
 
-	handler := new(aliasHandlerMock)
-	handler.On("HandleTestCommand").Once()
+	aliasHandler := new(aliasHandlerMock)
+	aliasHandler.On("HandleAlias").Once()
 
-	Tdd("foo", conf, handler)
+	Tdd("foo", conf, aliasHandler, new(newHandlerMock), new(todoHandlerMock))
 }
 
 func TestTddItHandlesNewCommand(t *testing.T) {
 	conf := Configuration{}
 
-	handler := new(aliasHandlerMock)
-	handler.On("HandleNew").Once()
+	newHandler := new(newHandlerMock)
+	newHandler.On("HandleNew").Once()
 
-	Tdd("new", conf, handler)
+	Tdd("new", conf, new(aliasHandlerMock), newHandler, new(todoHandlerMock))
 }
 
 func TestTddItHandlesTodoCommand(t *testing.T) {
 	conf := Configuration{}
 
-	handler := new(aliasHandlerMock)
+	handler := new(todoHandlerMock)
 	handler.On("HandleTodo").Once()
 
-	Tdd("todo", conf, handler)
+	Tdd("todo", conf, new(aliasHandlerMock), new(newHandlerMock), handler)
 }

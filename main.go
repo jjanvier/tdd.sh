@@ -14,29 +14,37 @@ func main() {
 	executor := CommandExecutor{}
 	notificationsCenter := NotificationsCenter{executor, pidFile}
 	todo := TodoList{todoFile}
-	handler := AliasHandler{executor, CommandFactory{}, ExecutionResultFactory{}, notificationsCenter, todo}
+	executionResultFactory := ExecutionResultFactory{}
+	commandFactory := CommandFactory{}
+	newHandler := NewHandler{executor, commandFactory, executionResultFactory}
+	todoHandler := TodoHandler{todo, newHandler, executionResultFactory}
+	aliasHandler := AliasHandler{executor, commandFactory, executionResultFactory, notificationsCenter}
 
-	Tdd(alias, conf, handler)
+	Tdd(alias, conf, aliasHandler, newHandler, todoHandler)
 }
 
-func Tdd(alias string, conf Configuration, handler AliasHandlerI) (ExecutionResult, error) {
+func Tdd(alias string, conf Configuration, aliasHandler AliasHandlerI, newHandler NewHandlerI, todoHandler TodoHandlerI) {
 	if "new" == alias {
 		// TODO: handle when there is no message
-		return handler.HandleNew(os.Args[2])
+		newHandler.HandleNew(os.Args[2])
+		return
 	}
 
 	if "todo" == alias {
 		// TODO: handle when there is no message
-		return handler.HandleTodo(os.Args[2])
+		todoHandler.HandleTodo(os.Args[2])
+		return
 	}
 
 	if "do" == alias {
-		return handler.HandleDo(os.Stdin)
+		todoHandler.HandleDo(os.Stdin)
+		return
 	}
 
 	if "done" == alias {
-		return handler.HandleDone()
+		todoHandler.HandleDone()
+		return
 	}
 
-	return handler.HandleTestCommand(conf, alias)
+	aliasHandler.HandleAlias(conf, alias)
 }
