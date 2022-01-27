@@ -1,7 +1,9 @@
-package main
+package handler
 
 import (
 	"bytes"
+	"github.com/jjanvier/tdd/execution"
+	"github.com/jjanvier/tdd/helper"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"os"
@@ -9,8 +11,8 @@ import (
 )
 
 func TestHandleTodo(t *testing.T) {
-	todoFile := createTmpFile("")
-	defer removeTmpFile(todoFile)
+	todoFile := helper.CreateTmpFile("")
+	defer helper.RemoveTmpFile(todoFile)
 
 	handler := _createNewHandler(todoFile.Name())
 	handler.HandleTodo("here is something I have to do later")
@@ -30,10 +32,10 @@ hmmmm, something else
 }
 
 func TestHandleDo(t *testing.T) {
-	todoFile := createTmpFile(`I should do that
+	todoFile := helper.CreateTmpFile(`I should do that
 also this should be done
 really important to do that`)
-	defer removeTmpFile(todoFile)
+	defer helper.RemoveTmpFile(todoFile)
 
 	fakeStdin := _fakeStdinWithSecondOptionSelected()
 	defer func() {
@@ -50,10 +52,10 @@ really important to do that`)
 }
 
 func TestHandleDone(t *testing.T) {
-	todoFile := createTmpFile(`I should do that
+	todoFile := helper.CreateTmpFile(`I should do that
 also this should be done
 really important to do that`)
-	defer removeTmpFile(todoFile)
+	defer helper.RemoveTmpFile(todoFile)
 
 	handler := _createNewHandler(todoFile.Name())
 
@@ -64,10 +66,10 @@ really important to do that`)
 }
 
 func _createNewHandler(todoPath string) TodoHandler {
-	executor := new(successCommandExecutorMock)
+	executor := new(execution.SuccessCommandExecutorMock)
 	todoList := TodoList{todoPath}
-	commandFactory := CommandFactory{}
-	executionResultFactory := ExecutionResultFactory{}
+	commandFactory := execution.CommandFactory{}
+	executionResultFactory := execution.ExecutionResultFactory{}
 	newHandler := NewHandler{executor, commandFactory, executionResultFactory}
 
 	return TodoHandler{todoList, newHandler, executionResultFactory}

@@ -1,45 +1,11 @@
-package main
+package handler
 
 import (
-	"errors"
+	"github.com/jjanvier/tdd/execution"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/mock"
 	"testing"
 )
-
-const commandPid = 100
-
-type successCommandExecutorMock struct {
-	mock.Mock
-}
-
-func (executor successCommandExecutorMock) ExecuteWithOutput(cmd Command) error {
-	return nil
-}
-
-func (executor successCommandExecutorMock) Execute(cmd Command) error {
-	return nil
-}
-
-func (executor successCommandExecutorMock) ExecuteBackground(cmd Command) (int, error) {
-	return commandPid, nil
-}
-
-type errorCommandExecutorMock struct {
-	mock.Mock
-}
-
-func (executor errorCommandExecutorMock) ExecuteWithOutput(cmd Command) error {
-	return errors.New("an error occurred during the execution of the command")
-}
-
-func (executor errorCommandExecutorMock) Execute(cmd Command) error {
-	return errors.New("an error occurred during the execution of the command")
-}
-
-func (executor errorCommandExecutorMock) ExecuteBackground(cmd Command) (int, error) {
-	return 0, errors.New("an error occurred during the execution of the command")
-}
 
 type notificationsCenterMock struct {
 	mock.Mock
@@ -105,40 +71,18 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	center.AssertExpectations(t)
 }
 
-func TestCreateExecutionResultSuccess(t *testing.T) {
-	factory := ExecutionResultFactory{}
-	result := factory.success([]Command{
-		{"toto", []string{"titi", "--tata"}},
-		{"foo", []string{"bar", "baz"}},
-	})
-
-	assert.Equal(t, "toto titi --tata && foo bar baz", result.Command)
-	assert.Equal(t, true, result.IsSuccess)
-}
-
-func TestCreateExecutionResultFailure(t *testing.T) {
-	factory := ExecutionResultFactory{}
-	result := factory.failure([]Command{
-		{"toto", []string{"titi", "--tata"}},
-		{"foo", []string{"bar", "baz"}},
-	})
-
-	assert.Equal(t, "toto titi --tata && foo bar baz", result.Command)
-	assert.Equal(t, false, result.IsSuccess)
-}
-
 func _createSuccessAliasHandler(center *notificationsCenterMock) AliasHandler {
-	executor := new(successCommandExecutorMock)
-	commandFactory := CommandFactory{}
-	executionResultFactory := ExecutionResultFactory{}
+	executor := new(execution.SuccessCommandExecutorMock)
+	commandFactory := execution.CommandFactory{}
+	executionResultFactory := execution.ExecutionResultFactory{}
 
 	return AliasHandler{executor, commandFactory, executionResultFactory, center}
 }
 
 func _createErrorAliasHandler(center *notificationsCenterMock) AliasHandler {
-	executor := new(errorCommandExecutorMock)
-	commandFactory := CommandFactory{}
-	executionResultFactory := ExecutionResultFactory{}
+	executor := new(execution.ErrorCommandExecutorMock)
+	commandFactory := execution.CommandFactory{}
+	executionResultFactory := execution.ExecutionResultFactory{}
 
 	return AliasHandler{executor, commandFactory, executionResultFactory, center}
 }

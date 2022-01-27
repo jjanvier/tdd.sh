@@ -1,6 +1,8 @@
-package main
+package notification
 
 import (
+	"github.com/jjanvier/tdd/execution"
+	"github.com/jjanvier/tdd/helper"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"strconv"
@@ -8,10 +10,10 @@ import (
 )
 
 func TestNotifyWithDelay(t *testing.T) {
-	pidFile := createTmpFile("")
-	defer removeTmpFile(pidFile)
+	pidFile := helper.CreateTmpFile("")
+	defer helper.RemoveTmpFile(pidFile)
 
-	executor := successCommandExecutorMock{}
+	executor := execution.SuccessCommandExecutorMock{}
 	center := NotificationsCenter{executor, pidFile.Name()}
 
 	executor.On("ExecuteBackground").Once()
@@ -20,7 +22,7 @@ func TestNotifyWithDelay(t *testing.T) {
 	actualContent, _ := ioutil.ReadFile(pidFile.Name())
 	// TODO: not good, we expose some internal details here
 	expectedContent := `pids:
-  ut: ` + strconv.Itoa(commandPid) + "\n"
+  ut: ` + strconv.Itoa(execution.FakeCommandPid) + "\n"
 
 	assert.Equal(t, expectedContent, string(actualContent))
 }
@@ -32,10 +34,10 @@ func TestNotifyWithDelayWithAPreviousNotification(t *testing.T) {
   ut: 654
 `
 
-	pidFile := createTmpFile(content)
-	defer removeTmpFile(pidFile)
+	pidFile := helper.CreateTmpFile(content)
+	defer helper.RemoveTmpFile(pidFile)
 
-	executor := successCommandExecutorMock{}
+	executor := execution.SuccessCommandExecutorMock{}
 	center := NotificationsCenter{executor, pidFile.Name()}
 
 	executor.On("ExecuteBackground").Once()
@@ -44,7 +46,7 @@ func TestNotifyWithDelayWithAPreviousNotification(t *testing.T) {
 	actualContent, _ := ioutil.ReadFile(pidFile.Name())
 	// TODO: not good, we expose some internal details here
 	expectedContent := `pids:
-  ut: ` + strconv.Itoa(commandPid) + "\n"
+  ut: ` + strconv.Itoa(execution.FakeCommandPid) + "\n"
 
 	assert.Equal(t, expectedContent, string(actualContent))
 }

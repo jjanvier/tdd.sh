@@ -1,4 +1,4 @@
-package main
+package notification
 
 import (
 	"gopkg.in/yaml.v2"

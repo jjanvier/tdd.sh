@@ -1,6 +1,7 @@
-package main
+package notification
 
 import (
+	"github.com/jjanvier/tdd/helper"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"testing"
@@ -11,8 +12,8 @@ func TestLoadTimersFromPidFile(t *testing.T) {
   ut: 655
   another_alias: 987976
 `
-	pidFile := createTmpFile(content)
-	defer removeTmpFile(pidFile)
+	pidFile := helper.CreateTmpFile(content)
+	defer helper.RemoveTmpFile(pidFile)
 
 	actual := LoadTimers(pidFile.Name())
 
@@ -26,8 +27,8 @@ func TestLoadTimersFromPidFile(t *testing.T) {
 }
 
 func TestSaveTimersInPidFile(t *testing.T) {
-	pidFile := createTmpFile("")
-	defer removeTmpFile(pidFile)
+	pidFile := helper.CreateTmpFile("")
+	defer helper.RemoveTmpFile(pidFile)
 
 	timers := Timers{}
 	aliases := make(map[string]int)
@@ -51,8 +52,8 @@ func TestSaveTimersInNonEmptyPidFile(t *testing.T) {
   baz: 987976
 `
 
-	pidFile := createTmpFile(content)
-	defer removeTmpFile(pidFile)
+	pidFile := helper.CreateTmpFile(content)
+	defer helper.RemoveTmpFile(pidFile)
 
 	timers := Timers{}
 	aliases := make(map[string]int)

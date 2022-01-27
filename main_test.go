@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/jjanvier/tdd/execution"
+	"github.com/jjanvier/tdd/handler"
 	"io"
 	"testing"
 
@@ -17,16 +19,16 @@ type todoHandlerMock struct {
 	mock.Mock
 }
 
-func (m *aliasHandlerMock) HandleAlias(conf Configuration, alias string) (ExecutionResult, error) {
+func (m *aliasHandlerMock) HandleAlias(conf handler.Configuration, alias string) (execution.ExecutionResult, error) {
 	m.Called()
 
-	return ExecutionResult{}, nil
+	return execution.ExecutionResult{}, nil
 }
 
-func (m *newHandlerMock) HandleNew(message string) (ExecutionResult, error) {
+func (m *newHandlerMock) HandleNew(message string) (execution.ExecutionResult, error) {
 	m.Called()
 
-	return ExecutionResult{}, nil
+	return execution.ExecutionResult{}, nil
 }
 
 func (m *todoHandlerMock) HandleTodo(message string) error {
@@ -35,10 +37,10 @@ func (m *todoHandlerMock) HandleTodo(message string) error {
 	return nil
 }
 
-func (m *todoHandlerMock) HandleDo(stdin io.ReadCloser) (ExecutionResult, error) {
+func (m *todoHandlerMock) HandleDo(stdin io.ReadCloser) (execution.ExecutionResult, error) {
 	m.Called()
 
-	return ExecutionResult{}, nil
+	return execution.ExecutionResult{}, nil
 }
 
 func (m *todoHandlerMock) HandleDone() error {
@@ -48,9 +50,9 @@ func (m *todoHandlerMock) HandleDone() error {
 }
 
 func TestTddItHandlesTestCommand(t *testing.T) {
-	conf := Configuration{}
-	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
+	conf := handler.Configuration{}
+	aliases := make(map[string]handler.Alias)
+	aliases["foo"] = handler.Alias{Command: "command1 arg1 arg2 --opt1", Timer: 120, Git: handler.Git{false}}
 	conf.Aliases = aliases
 
 	aliasHandler := new(aliasHandlerMock)
@@ -60,7 +62,7 @@ func TestTddItHandlesTestCommand(t *testing.T) {
 }
 
 func TestTddItHandlesNewCommand(t *testing.T) {
-	conf := Configuration{}
+	conf := handler.Configuration{}
 
 	newHandler := new(newHandlerMock)
 	newHandler.On("HandleNew").Once()
@@ -69,7 +71,7 @@ func TestTddItHandlesNewCommand(t *testing.T) {
 }
 
 func TestTddItHandlesTodoCommand(t *testing.T) {
-	conf := Configuration{}
+	conf := handler.Configuration{}
 
 	handler := new(todoHandlerMock)
 	handler.On("HandleTodo").Once()

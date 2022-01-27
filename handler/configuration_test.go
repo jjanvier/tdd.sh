@@ -1,9 +1,8 @@
-package main
+package handler
 
 import (
-	"io/ioutil"
-	"log"
-	"os"
+	"github.com/jjanvier/tdd/execution"
+	"github.com/jjanvier/tdd/helper"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -21,9 +20,9 @@ func TestLoad(t *testing.T) {
       amend: true
 `
 
-	confFile := createTmpFile(confContent)
+	confFile := helper.CreateTmpFile(confContent)
 	// TODO: use https://golang.org/pkg/testing/#B.Cleanup instead?
-	defer removeTmpFile(confFile)
+	defer helper.RemoveTmpFile(confFile)
 
 	actual := Load(confFile.Name())
 
@@ -42,7 +41,7 @@ func TestGetCommand(t *testing.T) {
 	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
 	conf.Aliases = aliases
 
-	expected := Command{"command1", []string{"arg1", "arg2", "--opt1"}}
+	expected := execution.Command{Name: "command1", Arguments: []string{"arg1", "arg2", "--opt1"}}
 	actual, _ := conf.GetCommand("foo")
 
 	assert.Equal(t, expected, actual)
@@ -86,31 +85,9 @@ func TestGetTimer(t *testing.T) {
 	assert.Equal(t, 120, actualTimer)
 }
 
-
 func TestGetTimerAliasNotFound(t *testing.T) {
 	conf := Configuration{}
 
 	_, actualError := conf.GetTimer("foo")
 	assert.Error(t, actualError)
-}
-
-func createTmpFile(content string) *os.File {
-	data := []byte(content)
-	tmpfile, err := ioutil.TempFile("/tmp", "tdd.sh-")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	if _, err := tmpfile.Write(data); err != nil {
-		log.Fatal(err)
-	}
-	if err := tmpfile.Close(); err != nil {
-		log.Fatal(err)
-	}
-
-	return tmpfile
-}
-
-func removeTmpFile(tmpfile *os.File) {
-	os.Remove(tmpfile.Name())
 }

@@ -1,4 +1,4 @@
-package main
+package handler
 
 import (
 	"io/ioutil"
@@ -7,11 +7,11 @@ import (
 )
 
 type TodoList struct {
-	path string
+	Path string
 }
 
 func (list TodoList) Add(todo string) error {
-	todoFile, err := os.OpenFile(list.path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
+	todoFile, err := os.OpenFile(list.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	defer todoFile.Close()
 	if err != nil {
 		return err
@@ -26,7 +26,7 @@ func (list TodoList) Add(todo string) error {
 }
 
 func (list TodoList) GetItems() ([]string, error) {
-	todoContent, err := ioutil.ReadFile(list.path)
+	todoContent, err := ioutil.ReadFile(list.Path)
 
 	if err != nil {
 		return []string{}, err
@@ -36,7 +36,7 @@ func (list TodoList) GetItems() ([]string, error) {
 }
 
 func (list TodoList) Clear() error {
-	todoFile, err := os.OpenFile(list.path, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
+	todoFile, err := os.OpenFile(list.Path, os.O_TRUNC|os.O_CREATE|os.O_WRONLY, 0644)
 	defer todoFile.Close()
 
 	return err
