@@ -19,21 +19,21 @@ type AliasHandler struct {
 }
 
 func (handler AliasHandler) HandleAlias(conf Configuration, alias string) (execution.ExecutionResult, error) {
-	testCmd, err := conf.GetCommand(alias)
+	testCmd, err := conf.getCommand(alias)
 	if err != nil {
 		return execution.ExecutionResult{}, err
 	}
 
 	gitAddCmd := handler.CommandFactory.CreateGitAdd()
 	gitCommitCmd := handler.CommandFactory.CreateGitCommit()
-	if amend, _ := conf.ShouldAmendCommits(alias); amend {
+	if amend, _ := conf.shouldAmendCommits(alias); amend {
 		gitCommitCmd = handler.CommandFactory.CreateGitCommitAmend()
 	}
 
 	handler.NotificationsCenter.Reset(alias)
 
 	if handler.Executor.ExecuteWithOutput(testCmd) != nil {
-		timer, _ := conf.GetTimer(alias)
+		timer, _ := conf.getTimer(alias)
 		handler.NotificationsCenter.NotifyWithDelay(alias, timer, notificationMessage)
 		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd, gitAddCmd, gitCommitCmd}), nil
 	}

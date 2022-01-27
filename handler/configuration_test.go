@@ -42,14 +42,14 @@ func TestGetCommand(t *testing.T) {
 	conf.Aliases = aliases
 
 	expected := execution.Command{Name: "command1", Arguments: []string{"arg1", "arg2", "--opt1"}}
-	actual, _ := conf.GetCommand("foo")
+	actual, _ := conf.getCommand("foo")
 
 	assert.Equal(t, expected, actual)
 }
 
 func TestGetCommandAliasNotFound(t *testing.T) {
 	conf := Configuration{}
-	_, actualError := conf.GetCommand("foo")
+	_, actualError := conf.getCommand("foo")
 
 	assert.Error(t, actualError)
 }
@@ -61,17 +61,17 @@ func TestShouldAmendCommits(t *testing.T) {
 	aliases["bar"] = Alias{"command2", 60, Git{true}}
 	conf.Aliases = aliases
 
-	notAmended, _ := conf.ShouldAmendCommits("foo")
+	notAmended, _ := conf.shouldAmendCommits("foo")
 	assert.False(t, notAmended)
 
-	amended, _ := conf.ShouldAmendCommits("bar")
+	amended, _ := conf.shouldAmendCommits("bar")
 	assert.True(t, amended)
 }
 
 func TestShouldAmendCommitsAliasNotFound(t *testing.T) {
 	conf := Configuration{}
 
-	_, actualError := conf.ShouldAmendCommits("foo")
+	_, actualError := conf.shouldAmendCommits("foo")
 	assert.Error(t, actualError)
 }
 
@@ -81,13 +81,13 @@ func TestGetTimer(t *testing.T) {
 	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
 	conf.Aliases = aliases
 
-	actualTimer, _ := conf.GetTimer("foo")
+	actualTimer, _ := conf.getTimer("foo")
 	assert.Equal(t, 120, actualTimer)
 }
 
 func TestGetTimerAliasNotFound(t *testing.T) {
 	conf := Configuration{}
 
-	_, actualError := conf.GetTimer("foo")
+	_, actualError := conf.getTimer("foo")
 	assert.Error(t, actualError)
 }

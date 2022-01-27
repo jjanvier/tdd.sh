@@ -45,7 +45,7 @@ func Load(path string) Configuration {
 	return conf
 }
 
-func (conf Configuration) GetCommand(alias string) (execution.Command, error) {
+func (conf Configuration) getCommand(alias string) (execution.Command, error) {
 	if _, ok := conf.Aliases[alias]; !ok {
 		return execution.Command{}, errors.New("The alias '" + alias + "' does not exist.")
 	}
@@ -56,7 +56,7 @@ func (conf Configuration) GetCommand(alias string) (execution.Command, error) {
 	return execution.Command{Name: args[0], Arguments: args[1:]}, nil
 }
 
-func (conf Configuration) ShouldAmendCommits(alias string) (bool, error) {
+func (conf Configuration) shouldAmendCommits(alias string) (bool, error) {
 	if _, ok := conf.Aliases[alias]; !ok {
 		return false, errors.New("The alias '" + alias + "' does not exist.")
 	}
@@ -64,7 +64,7 @@ func (conf Configuration) ShouldAmendCommits(alias string) (bool, error) {
 	return conf.Aliases[alias].Git.Amend, nil
 }
 
-func (conf Configuration) GetTimer(alias string) (int, error) {
+func (conf Configuration) getTimer(alias string) (int, error) {
 	if _, ok := conf.Aliases[alias]; !ok {
 		return 0, errors.New("The alias '" + alias + "' does not exist.")
 	}
