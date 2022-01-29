@@ -11,9 +11,10 @@ const pidFile = "/tmp/tdd.sh-pid"
 const ConfigurationFile = ".tdd.yml"
 
 type Container struct {
-	NewHandler   handler.NewHandlerI
-	TodoHandler  handler.TodoHandlerI
-	AliasHandler handler.AliasHandlerI
+	NewHandler    handler.NewHandlerI
+	TodoHandler   handler.TodoHandlerI
+	AliasHandler  handler.AliasHandlerI
+	NotifyHandler handler.NotifyHandlerI
 }
 
 func buildDI() Container {
@@ -26,8 +27,9 @@ func buildDI() Container {
 	newHandler := handler.NewHandler{Executor: executor, CommandFactory: commandFactory, ExecutionResultFactory: executionResultFactory}
 	todoHandler := handler.TodoHandler{Todo: todo, NewHandler: newHandler, ExecutionResultFactory: executionResultFactory}
 	aliasHandler := handler.AliasHandler{Executor: executor, CommandFactory: commandFactory, ExecutionResultFactory: executionResultFactory, NotificationsCenter: notificationsCenter}
+	notifyHandler := handler.NotifyHandler{}
 
-	return Container{newHandler, todoHandler, aliasHandler}
+	return Container{newHandler, todoHandler, aliasHandler, notifyHandler}
 }
 
 // DI global var, quite bad, but I don't know how to do best
