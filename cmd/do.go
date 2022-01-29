@@ -9,7 +9,7 @@ import (
 
 var doCmd = &cobra.Command{
 	Use:   "do",
-	Short: "Pick an item from the todo list.",
+	Short: "Pick an item from the todo list",
 	Long: `Pick an item from the todo list.
 
 When you are ready, which means when your tests are green, you can pickup a task from this list.

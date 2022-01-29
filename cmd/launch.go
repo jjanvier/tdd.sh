@@ -14,7 +14,7 @@ var launchCmd = &cobra.Command{
 The alias must be present in the configuration file, in the "aliases" section. 
 You can also launch this alias simply with "tdd alias".
 `,
-	Example: "launch unit-tests",
+	Example: "tdd launch unit-tests",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		alias := args[0]

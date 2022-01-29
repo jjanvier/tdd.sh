@@ -7,7 +7,7 @@ import (
 
 var todoCmd = &cobra.Command{
 	Use:   "todo item",
-	Short: "Add an item to the todo list.",
+	Short: "Add an item to the todo list",
 	Long: `Add an item to the todo list.
 
 While you're working on something, you can think about fixing or improving something else. 

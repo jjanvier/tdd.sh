@@ -10,40 +10,63 @@ var rootCmd = &cobra.Command{
 	Use:   "tdd",
 	Short: "A simple tool to enforce the TDD practice",
 	Long: `A simple tool to enforce the TDD practice. It allows to:
-  - easily launch your tests
+  - have a simple and consistent way to launch your tests across all your projects
   - automatically commit when your tests are green
   - launch a notification when your tests have been red for too long
-  - have a consistent way to launch your tests across all your projects
+  - stay focused in the red/green/refactor loop by using a todo list
 `,
-	// Uncomment the following line if your bare application
-	// has an action associated with it:
-	// Run: func(cmd *cobra.Command, args []string) { },
 }
 
 // Execute adds all child commands to the root command and sets flags appropriately.
 // This is called by main.main(). It only needs to happen once to the rootCmd.
 func Execute() {
+	if shouldLaunchCommandBeExecuted() {
+		addLaunchToOsArgs()
+	}
+
 	err := rootCmd.Execute()
 	if err != nil {
-
-		args := rootCmd.Flags().Args()
-		if len(args) != 1 {
-			os.Exit(1)
-		}
-
-		// if we have only one argument, we try to launch the alias
-		launchCmd.Execute()
+		os.Exit(1)
 	}
 }
 
-func init() {
-	// Here you will define your flags and configuration settings.
-	// Cobra supports persistent flags, which, if defined here,
-	// will be global for your application.
+func init() {}
 
-	// rootCmd.PersistentFlags().StringVar(&cfgFile, "config", "", "config file (default is $HOME/.tdd.yaml)")
+// Try to find if "launchCommand" subcommand should be executed depending on os.Args
+//
+// When the command returned by rootCmd.Traverse() is the root command itself, that means
+// no suitable subcommand has been found for the given os.Args. In that case, we'll try to launch the "launchCommand" to
+// execute a test alias
+func shouldLaunchCommandBeExecuted() bool {
+	// "tdd" has been launched without any argument, so we want to the rootCommand to be executed
+	if len(os.Args) == 1 {
+		return false
+	}
 
-	// Cobra also supports local flags, which will only run
-	// when this action is called directly.
-	//rootCmd.Flags().BoolP("toggle", "t", false, "Help message for toggle")
+	// "tdd" has been launched only with "--help" or "-h" option, so we want to the rootCommand to be executed
+	if len(os.Args) == 2 && (os.Args[1] == "--help" || os.Args[1] == "-h") {
+		return false
+	}
+
+	// "tdd" has been launched with "completion" argument, so we want to the rootCommand to be executed
+	if len(os.Args) >= 2 && os.Args[1] == "completion" {
+		return false
+	}
+
+	cmd, _, _ := rootCmd.Traverse(os.Args[1:])
+
+	return cmd == rootCmd
+}
+
+// To be able to execute the "launchCommand" to execute a test alias,
+// we simply add "launch" to the os.Args.
+//
+// For instance:
+// 		- before this function, os.Args = ["tdd", "myalias"]
+// 		- after this function, os.Args = ["tdd", "launch", "myalias"]
+func addLaunchToOsArgs() {
+	oldArgs := os.Args
+	newArgs := []string{oldArgs[0], "launch"}
+	newArgs = append(newArgs, oldArgs[1:]...)
+	os.Args = newArgs
 }
