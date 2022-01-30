@@ -14,7 +14,7 @@ func TestNotifyWithDelay(t *testing.T) {
 	defer helper.RemoveTmpFile(pidFile)
 
 	executor := execution.SuccessCommandExecutorMock{}
-	center := NotificationsCenter{executor, pidFile.Name()}
+	center := NotificationsCenter{executor, execution.CommandFactory{}, pidFile.Name()}
 
 	executor.On("ExecuteBackground").Once()
 	center.NotifyWithDelay("ut", 45, "the message")
@@ -38,7 +38,7 @@ func TestNotifyWithDelayWithAPreviousNotification(t *testing.T) {
 	defer helper.RemoveTmpFile(pidFile)
 
 	executor := execution.SuccessCommandExecutorMock{}
-	center := NotificationsCenter{executor, pidFile.Name()}
+	center := NotificationsCenter{executor, execution.CommandFactory{}, pidFile.Name()}
 
 	executor.On("ExecuteBackground").Once()
 	center.NotifyWithDelay("ut", 45, "the message")

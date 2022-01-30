@@ -18,11 +18,11 @@ type Container struct {
 }
 
 func buildDI() Container {
+	commandFactory := execution.CommandFactory{}
 	executor := execution.CommandExecutor{}
-	notificationsCenter := notification.NotificationsCenter{Executor: executor, PidFileName: pidFile}
+	notificationsCenter := notification.NotificationsCenter{Executor: executor, CommandFactory: commandFactory, PidFileName: pidFile}
 	todo := handler.TodoList{Path: todoFile}
 	executionResultFactory := execution.ExecutionResultFactory{}
-	commandFactory := execution.CommandFactory{}
 
 	newHandler := handler.NewHandler{Executor: executor, CommandFactory: commandFactory, ExecutionResultFactory: executionResultFactory}
 	todoHandler := handler.TodoHandler{Todo: todo, NewHandler: newHandler, ExecutionResultFactory: executionResultFactory}

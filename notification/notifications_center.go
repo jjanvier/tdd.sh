@@ -3,39 +3,51 @@ package notification
 import (
 	"github.com/jjanvier/tdd/execution"
 	"os"
-	"strconv"
 )
 
 type NotificationCenterI interface {
+	// NotifyWithDelay launch a notification after a delay, and in background, for the given alias
 	NotifyWithDelay(alias string, delay int, message string)
+	// Reset cancel the previous notification that was launched in background, if any, for the given alias
 	Reset(alias string)
 }
 
+// NotificationsCenter allows handling notifications. Internally, the PidFileName is used to store the PIDs of the notifications
+// related to the different test aliases that have been launched. See Timers
 type NotificationsCenter struct {
-	Executor    execution.CommandExecutorI
-	PidFileName string
+	Executor       execution.CommandExecutorI
+	CommandFactory execution.CommandFactory
+	PidFileName    string
 }
 
 func (center NotificationsCenter) NotifyWithDelay(alias string, delay int, message string) {
-	// define a "tdd notify delay message" command
-	cmd := execution.Command{Name: os.Args[0], Arguments: []string{"notify", strconv.Itoa(delay), message}}
-	// call this command in a subprocess as we don't want the current process to wait for the delay
-	pid, _ := center.Executor.ExecuteBackground(cmd)
+	cmd := center.CommandFactory.CreateNotify(delay, message)
 
-	timers := LoadTimers(center.PidFileName)
-	timers.UpsertPid(alias, pid)
+	// call this command in a subprocess as we don't want the current
+	// process (our "tdd launch myalias" command) to wait for the delay
+	pid, err := center.Executor.ExecuteBackground(cmd)
 
-	SaveTimers(center.PidFileName, timers)
+	if err == nil {
+		saveCommandPid(center.PidFileName, alias, pid)
+	}
 }
 
 func (center NotificationsCenter) Reset(alias string) {
 	timers := LoadTimers(center.PidFileName)
-	pid := timers.GetPid(alias)
+	pid, err := timers.GetPid(alias)
 
-	killPreviousNotification(pid)
+	if err == nil {
+		killPreviousCommand(pid)
+	}
 }
 
-func killPreviousNotification(pid int) {
+func saveCommandPid(pidFileName string, alias string, pid int) {
+	timers := LoadTimers(pidFileName)
+	timers.UpsertPid(alias, pid)
+	SaveTimers(pidFileName, timers)
+}
+
+func killPreviousCommand(pid int) {
 	process, err := os.FindProcess(pid)
 	if err == nil {
 		process.Kill()

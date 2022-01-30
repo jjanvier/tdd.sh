@@ -78,8 +78,20 @@ func TestItGetsThePidOfATimer(t *testing.T) {
 	aliases["foo"] = 654
 	timers.Pids = aliases
 
-	actual := timers.GetPid("foo")
+	actual, _ := timers.GetPid("foo")
 	assert.Equal(t, 654, actual)
+}
+
+func TestItDoesNotGetThePidOfATimer(t *testing.T) {
+	timers := Timers{}
+	aliases := make(map[string]int)
+	aliases["bar"] = 12
+	aliases["foo"] = 654
+	timers.Pids = aliases
+
+	_, actualError := timers.GetPid("baz")
+
+	assert.Error(t, actualError)
 }
 
 func TestItInsertsThePidOfATimer(t *testing.T) {
