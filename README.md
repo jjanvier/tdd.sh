@@ -50,10 +50,10 @@ If your tests are red and you have configured a timer for this alias, you'll rec
 
 ### The configuration file
 
-At the root of your project, you must define a `.tdd.yml` configuration file. This configuration defines all the test aliases you want to use. For instance:
+At the root of your project, you must define a `.tdd.yaml` configuration file. This configuration defines all the test aliases you want to use. For instance:
 
 ```yaml
-
+# .tdd.yaml
 aliases:
     ut: # I use "ut" for Unit Tests. Personally, I define a "ut" alias for all my projects
         command: docker-compose run --rm php vendor/bin/phpspec run -v

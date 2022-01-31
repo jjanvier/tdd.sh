@@ -8,7 +8,7 @@ import (
 
 const todoFile = ".tdd.todo"
 const pidFile = "/tmp/tdd.sh-pid"
-const ConfigurationFile = ".tdd.yml"
+const ConfigurationFile = ".tdd.yaml"
 
 type Container struct {
 	NewHandler    handler.NewHandlerI
