@@ -28,3 +28,21 @@ func TestDoesNotWipeOutFileDuringInit(t *testing.T) {
 
 	assert.Error(t, err)
 }
+
+func TestHandleValidate(t *testing.T) {
+	file := helper.CreateTmpFile(defaultConfigurationFile)
+	defer helper.RemoveTmpFile(file)
+
+	handler := ConfigHandler{file.Name()}
+
+	assert.True(t, handler.HandleValidate())
+}
+
+func TestHandleNotValidate(t *testing.T) {
+	file := helper.CreateTmpFile("wrong configuration here!")
+	defer helper.RemoveTmpFile(file)
+
+	handler := ConfigHandler{file.Name()}
+
+	assert.False(t, handler.HandleValidate())
+}

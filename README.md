@@ -50,7 +50,22 @@ If your tests are red and you have configured a timer for this alias, you'll rec
 
 ### The configuration file
 
-At the root of your project, you must define a `.tdd.yaml` configuration file. This configuration defines all the test aliases you want to use. For instance:
+At the root of your project, you must create a `.tdd.yaml` configuration file. It defines all the test aliases you want to use. 
+
+You can initialize a new configuration file with:
+
+```bash
+tdd config --init
+```
+
+Then, change it according to your needs.
+
+You can validate an existing configuration file with:
+```bash
+tdd config --validate
+```
+
+Here is an example of a configuration file:
 
 ```yaml
 # .tdd.yaml

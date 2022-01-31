@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/jjanvier/tdd/execution"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 
@@ -38,16 +37,24 @@ type Configuration struct {
 	Aliases map[string]Alias
 }
 
-func Load(path string) Configuration {
+func LoadConfiguration(path string) (Configuration, error) {
 	content, err := ioutil.ReadFile(path)
 	if err != nil {
-		log.Fatal(err)
+		return Configuration{}, err
 	}
 
 	conf := Configuration{}
-	yaml.Unmarshal(content, &conf)
 
-	return conf
+	err2 := yaml.Unmarshal(content, &conf)
+	if err2 != nil {
+		return Configuration{}, err2
+	}
+
+	if len(conf.Aliases) == 0 {
+		return Configuration{}, errors.New("No alias in the configuration file")
+	}
+
+	return conf, nil
 }
 
 func (conf Configuration) getCommand(alias string) (execution.Command, error) {
@@ -77,7 +84,7 @@ func (conf Configuration) getTimer(alias string) (int, error) {
 	return conf.Aliases[alias].Timer, nil
 }
 
-func (conf Configuration) Exists(path string) bool {
+func ConfigurationFileExists(path string) bool {
 	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
 		return false
 	}

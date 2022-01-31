@@ -7,6 +7,7 @@ import (
 
 type ConfigHandlerI interface {
 	HandleInit() error
+	HandleValidate() bool
 }
 
 type ConfigHandler struct {
@@ -14,7 +15,7 @@ type ConfigHandler struct {
 }
 
 func (handler ConfigHandler) HandleInit() error {
-	configFileExists := Configuration{}.Exists(handler.Path)
+	configFileExists := ConfigurationFileExists(handler.Path)
 	if configFileExists {
 		return errors.New("The configuration file \"" + handler.Path + "\" already exists.")
 	}
@@ -31,4 +32,10 @@ func (handler ConfigHandler) HandleInit() error {
 	}
 
 	return nil
+}
+
+func (handler ConfigHandler) HandleValidate() bool {
+	_, err := LoadConfiguration(handler.Path)
+
+	return err == nil
 }

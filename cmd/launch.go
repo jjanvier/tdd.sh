@@ -18,16 +18,21 @@ You can also launch this alias simply with "tdd alias".
 	Example: "tdd launch unit-tests",
 	Args:    cobra.ExactArgs(1),
 	PreRunE: func(cmd *cobra.Command, args []string) error {
-		configFileExists := handler.Configuration{}.Exists(container.ConfigurationFile)
+		configFileExists := handler.ConfigurationFileExists(container.ConfigurationFile)
 		if !configFileExists {
-			return errors.New("No configuration file \".tdd.yaml\" has been found.")
+			return errors.New("No configuration file \"" + container.ConfigurationFile + "\" found.")
+		}
+
+		configFileValid := container.DI.ConfigHandler.HandleValidate()
+		if !configFileValid {
+			return errors.New("The configuration file \"" + container.ConfigurationFile + "\" is not valid.")
 		}
 
 		return nil
 	},
 	Run: func(cmd *cobra.Command, args []string) {
 		alias := args[0]
-		conf := handler.Load(container.ConfigurationFile)
+		conf, _ := handler.LoadConfiguration(container.ConfigurationFile)
 		container.DI.AliasHandler.HandleAlias(conf, alias)
 	},
 }

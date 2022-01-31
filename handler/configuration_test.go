@@ -8,7 +8,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestLoad(t *testing.T) {
+func TestLoadConfiguration(t *testing.T) {
 	confContent := `aliases:
   foo:
     command: command1
@@ -24,7 +24,7 @@ func TestLoad(t *testing.T) {
 	// TODO: use https://golang.org/pkg/testing/#B.Cleanup instead?
 	defer helper.RemoveTmpFile(confFile)
 
-	actual := Load(confFile.Name())
+	actual, _ := LoadConfiguration(confFile.Name())
 
 	expectedAliases := make(map[string]Alias)
 	expectedAliases["foo"] = Alias{"command1", 120, Git{false}}
@@ -33,6 +33,35 @@ func TestLoad(t *testing.T) {
 	expected.Aliases = expectedAliases
 
 	assert.Equal(t, expected, actual)
+}
+
+func TestLoadConfigurationErrorRoot(t *testing.T) {
+	confContent := `aliasesWrong:
+  foo:
+    command: command1
+    timer: 120
+`
+
+	confFile := helper.CreateTmpFile(confContent)
+	defer helper.RemoveTmpFile(confFile)
+
+	_, err := LoadConfiguration(confFile.Name())
+
+	assert.Error(t, err)
+}
+
+func TestLoadConfigurationErrorNoCommand(t *testing.T) {
+	confContent := `aliasesWrong:
+  foo:
+    timer: 120
+`
+
+	confFile := helper.CreateTmpFile(confContent)
+	defer helper.RemoveTmpFile(confFile)
+
+	_, err := LoadConfiguration(confFile.Name())
+
+	assert.Error(t, err)
 }
 
 func TestGetCommand(t *testing.T) {
@@ -96,8 +125,6 @@ func TestFileExists(t *testing.T) {
 	confFile := helper.CreateTmpFile("")
 	defer helper.RemoveTmpFile(confFile)
 
-	conf := Configuration{}
-
-	assert.True(t, conf.Exists(confFile.Name()))
-	assert.False(t, conf.Exists("/this/one/does/not/exist"))
+	assert.True(t, ConfigurationFileExists(confFile.Name()))
+	assert.False(t, ConfigurationFileExists("/this/one/does/not/exist"))
 }
