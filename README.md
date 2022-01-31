@@ -160,12 +160,13 @@ TODO
   - Tests do not pass ❌
   - OK ✅ (for non-test commands)
   - Error ❌ (for non-test commands)
-- display errors to users(like "alias not found" or "missing commit message" with _tdd new_)
-- proper error message when there is no configuration file
+- ~~display errors to users(like "alias not found" or "missing commit message" with _tdd new_)~~
+- ~~proper error message when there is no configuration file~~
 - default values for configuration
-- handle all cases where configuration is incorrect =>  validate configuration file schema? or simply check at startup?
-- be able to initialize a default config file
+- ~~handle all cases where configuration is incorrect =>  validate configuration file schema? or simply check at startup?~~
+- ~~be able to initialize a default config file~~
 - be able to define a default alias? 
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
 - ~~use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra~~ 
+- handle "complex" commands
