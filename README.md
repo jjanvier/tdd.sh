@@ -4,21 +4,27 @@ A simple tool to enforce the TDD practice.
 
 It allows to:
 
-- easily launch your tests
+- have a simple and consistent way to launch your tests across all your projects, whatever the language
 - automatically commit when your tests are green
 - launch a notification when your tests have been red for too long
-- have a consistent way to launch your tests across all your projects
+- stay focused in the red/green/refactor loop by using a todo list
 
 ## How to install
 
 ### Requirements
 
-TODO
+On Linux:
+
+- `libasound2-dev` to play the light sound bell when the tests have been red for too long
+
+On MacOS, nothing particular is required.
+
 
 ### Installation
 
-TODO
+Download the latest binary, which is available at [tdd-dot-sh.zip](https://github.com/jjanvier/tdd.sh/releases/latest/download/tdd-dot-sh.zip). Unzip it and install the binary in a directory recognized by your `$PATH` variable.
 
+Yippee, you are now ready to use the `tdd` command!
 
 ## How to use
 
@@ -27,10 +33,12 @@ TODO
 Start a new TDD session:
 
 ```bash
-tdd new "a clear commit message that explains what I want to achieve"
+tdd new "a clear message that explains what I want to achieve"
 ```
 
-Then, start your classical TDD loop. Write a failing test, write the minimum code needed to make it pass, run all your tests, and refactor. To run your tests, use:
+The message of this TDD session will be used to commit your changes.
+
+Then, start your classical TDD loop. Write a failing test, write the minimum code needed to make it pass, run all your tests, and refactor. To run your tests alias, use:
 
 ```bash
 tdd my_alias
@@ -42,7 +50,7 @@ If your tests are red and you have configured a timer for this alias, you'll rec
 
 ### The configuration file
 
-At the root of your project, you must define a `.tdd.yml` configuration file. This configuration defines all the aliases you want to use. For instance:
+At the root of your project, you must define a `.tdd.yml` configuration file. This configuration defines all the test aliases you want to use. For instance:
 
 ```yaml
 
@@ -51,23 +59,25 @@ aliases:
         command: docker-compose run --rm php vendor/bin/phpspec run -v
         git:
             amend: true # commits will be amended when tests are green
-        timer: 120 # you'll receive a small notification if your steps are still red after 120 seconds
-    it_invoicing: # another alias
-        command: docker-compose run --rm php vendor/bin/phpunit --suite=Integration-Invoicing
+        timer: 60 # you'll receive a small notification if your steps are still red after 60 seconds
+    ut_go: # another alias
+        command: go test ./... -v
         # if no "git" key is configured, commits won't be amended: the previous message will be reused
         # if no "timer" key is defined, no notification will pop
 ```
 
 ### Using the todo list
 
-While you're working on something you can think about fixing or improving something else. To not loose the focus, it's handy to use a todo list for that:
+While you're working on something you can think about fixing or improving something else. To not lose the focus, it's handy to note this idea in a todo list:
 
 ```bash
 tdd todo "I should do this other thing"
 tdd todo "oh, something else I think about too"
 ```
 
-When you are ready you can pickup a task from this list:
+Please note that the purpose of this to-do list is not to store tasks that will take us months to complete. It's not an alternative to the useless `// TODO: fix this` that we can find sometimes in our codebase. Its goal is to minimize the red/green time: when the tests are failing, our only goal is to make them turn green quickly and easily. Anything that is not related to this precise goal should land in this todo list. Therefore, it should have a short lifetime; typically, one day maximum.
+
+When you are ready, which means when your tests are green, you can pick a task from this list:
 
 ```bash
 tdd do
@@ -76,14 +86,12 @@ tdd do
 The list of tasks is displayed:
 
 ```  
-> Here is your todo list:
-> Which task do you want to tackle?
->   1 - I should do this other thing
->   2 - oh, something else I think about too
->
+Here is your todo list, which task do you want to tackle?
+  > I should do this other thing
+  > oh, something else I thought about too
 ```
 
-Now you can enter the number of the task you want to work on, this will start a new TDD session by using this task as a commit message.
+Now you can select the item you want to work on, this will start a new TDD session by using this task as a commit message.
 
 If you need to, you can clear this todo list at anytime with:
 
@@ -118,7 +126,7 @@ TODO
 - not ideal, but it works for me
 - if you're a beginner, start with a 10 minutes timer and try to reduce it week after week
 
-## TODO list
+## Features list
 
 - ~~be able to launch a test command with an alias~~
 - ~~be able to start a new tdd session (that should create an empty commit I can amend on)~~
@@ -145,4 +153,4 @@ TODO
 - be able to define a default alias? 
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
-- use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra 
+- ~~use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra~~ 

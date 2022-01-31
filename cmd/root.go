@@ -10,7 +10,7 @@ var rootCmd = &cobra.Command{
 	Use:   "tdd",
 	Short: "A simple tool to enforce the TDD practice",
 	Long: `A simple tool to enforce the TDD practice. It allows to:
-  - have a simple and consistent way to launch your tests across all your projects
+  - have a simple and consistent way to launch your tests across all your projects, whatever the language
   - automatically commit when your tests are green
   - launch a notification when your tests have been red for too long
   - stay focused in the red/green/refactor loop by using a todo list

@@ -12,7 +12,7 @@ var doCmd = &cobra.Command{
 	Short: "Pick an item from the todo list",
 	Long: `Pick an item from the todo list.
 
-When you are ready, which means when your tests are green, you can pickup a task from this list.
+When you are ready, which means when your tests are green, you can pick a task from this list.
 This will start a new TDD session by using this task as a commit message.
 `,
 	Args: cobra.ExactArgs(0),
