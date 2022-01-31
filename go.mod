@@ -7,6 +7,7 @@ require (
 	github.com/gen2brain/beeep v0.0.0-20200526185328-e9c15c258e28
 	github.com/gopherjs/gopherjs v0.0.0-20210202160940-bed99a852dfe // indirect
 	github.com/manifoldco/promptui v0.9.0
+	github.com/nu7hatch/gouuid v0.0.0-20131221200532-179d4d0c4d8d // indirect
 	github.com/spf13/afero v1.8.0 // indirect
 	github.com/spf13/cobra v1.3.0
 	github.com/spf13/viper v1.10.1 // indirect

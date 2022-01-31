@@ -1,6 +1,7 @@
 package helper
 
 import (
+	uuid "github.com/nu7hatch/gouuid"
 	"io/ioutil"
 	"log"
 	"os"
@@ -23,6 +24,15 @@ func CreateTmpFile(content string) *os.File {
 	return tmpfile
 }
 
-func RemoveTmpFile(tmpfile *os.File) {
-	os.Remove(tmpfile.Name())
+func RemoveTmpFile(file *os.File) {
+	os.Remove(file.Name())
+}
+
+func RemoveTmpFileByName(file string) {
+	os.Remove(file)
+}
+
+func TmpFileName() string {
+	id, _ := uuid.NewV4()
+	return "/tmp/tdd.sh-" + id.String()
 }

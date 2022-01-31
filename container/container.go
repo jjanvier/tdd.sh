@@ -15,6 +15,7 @@ type Container struct {
 	TodoHandler   handler.TodoHandlerI
 	AliasHandler  handler.AliasHandlerI
 	NotifyHandler handler.NotifyHandlerI
+	ConfigHandler handler.ConfigHandlerI
 }
 
 func buildDI() Container {
@@ -28,8 +29,9 @@ func buildDI() Container {
 	todoHandler := handler.TodoHandler{Todo: todo, NewHandler: newHandler, ExecutionResultFactory: executionResultFactory}
 	aliasHandler := handler.AliasHandler{Executor: executor, CommandFactory: commandFactory, ExecutionResultFactory: executionResultFactory, NotificationsCenter: notificationsCenter}
 	notifyHandler := handler.NotifyHandler{}
+	configHandler := handler.ConfigHandler{Path: ConfigurationFile}
 
-	return Container{newHandler, todoHandler, aliasHandler, notifyHandler}
+	return Container{newHandler, todoHandler, aliasHandler, notifyHandler, configHandler}
 }
 
 // DI global var, quite bad, but I don't know how to do best

@@ -91,3 +91,13 @@ func TestGetTimerAliasNotFound(t *testing.T) {
 	_, actualError := conf.getTimer("foo")
 	assert.Error(t, actualError)
 }
+
+func TestFileExists(t *testing.T) {
+	confFile := helper.CreateTmpFile("")
+	defer helper.RemoveTmpFile(confFile)
+
+	conf := Configuration{}
+
+	assert.True(t, conf.Exists(confFile.Name()))
+	assert.False(t, conf.Exists("/this/one/does/not/exist"))
+}

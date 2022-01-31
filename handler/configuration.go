@@ -5,19 +5,24 @@ import (
 	"github.com/jjanvier/tdd/execution"
 	"io/ioutil"
 	"log"
+	"os"
 	"strings"
 
 	"gopkg.in/yaml.v2"
 )
 
 // The configuration file should be like:
-//
-// aliases:
-//     ut:
-//         command: go test -v
-//         git:
-//             amend: true
-//         timer: 120
+const defaultConfigurationFile = `aliases:
+    ut: # I use "ut" for Unit Tests. Personally, I define a "ut" alias for all my projects
+        command: echo changeme
+        git:
+            amend: true # commits will be amended when tests are green
+        timer: 60 # you'll receive a small notification if your steps are still red after 60 seconds
+    another-alias:
+        command: echo changemetoo
+        # if no "git" key is configured, commits won't be amended: the previous message will be reused
+        # if no "timer" key is defined, no notification will pop
+`
 
 type Git struct {
 	Amend bool
@@ -70,4 +75,12 @@ func (conf Configuration) getTimer(alias string) (int, error) {
 	}
 
 	return conf.Aliases[alias].Timer, nil
+}
+
+func (conf Configuration) Exists(path string) bool {
+	if _, err := os.Stat(path); errors.Is(err, os.ErrNotExist) {
+		return false
+	}
+
+	return true
 }

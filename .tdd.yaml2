@@ -1,0 +1,6 @@
+aliases:
+    ut:
+        command: go test ./... -v
+        timer: 60
+        git:
+            amend: true
