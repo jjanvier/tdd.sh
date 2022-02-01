@@ -81,6 +81,8 @@ aliases:
         # if no "timer" key is defined, no notification will pop
 ```
 
+With this configuration file, you could launch your aliases `ut` and `ut_go` with respectively `tdd ut` and `tdd ut_go`. Please note that for the moment, the `command` key can not handle "complex" commands with `&&`, `||` or `;`.
+
 ### Using the todo list
 
 While you're working on something you can think about fixing or improving something else. To not lose the focus, it's handy to note this idea in a todo list:
@@ -169,4 +171,4 @@ TODO
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
 - ~~use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra~~ 
-- handle "complex" commands
+- handle "complex" commands with `&&`, `||` or `;` => check https://github.com/alecthomas/participle

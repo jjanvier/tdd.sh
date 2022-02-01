@@ -3,22 +3,21 @@ package handler
 import (
 	"errors"
 	"github.com/jjanvier/tdd/execution"
+	"github.com/txgruppi/parseargs-go"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"os"
-	"strings"
-
-	"gopkg.in/yaml.v2"
 )
 
 // The configuration file should be like:
 const defaultConfigurationFile = `aliases:
     ut: # I use "ut" for Unit Tests. Personally, I define a "ut" alias for all my projects
-        command: echo changeme
+        command: echo "change me"
         git:
             amend: true # commits will be amended when tests are green
         timer: 60 # you'll receive a small notification if your steps are still red after 60 seconds
     another-alias:
-        command: echo changemetoo
+        command: echo "change me too"
         # if no "git" key is configured, commits won't be amended: the previous message will be reused
         # if no "timer" key is defined, no notification will pop
 `
@@ -63,7 +62,10 @@ func (conf Configuration) getCommand(alias string) (execution.Command, error) {
 	}
 
 	cmd := conf.Aliases[alias].Command
-	args := strings.Fields(cmd)
+	args, err := parseargs.Parse(cmd)
+	if err != nil {
+		return execution.Command{}, errors.New("Unable to parse the command of the alias '" + alias)
+	}
 
 	return execution.Command{Name: args[0], Arguments: args[1:]}, nil
 }

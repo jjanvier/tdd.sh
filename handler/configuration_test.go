@@ -14,7 +14,7 @@ func TestLoadConfiguration(t *testing.T) {
     command: command1
     timer: 120
   bar:
-    command: command2
+    command: echo "a more complex command"
     timer: 500
     git:
       amend: true
@@ -28,7 +28,7 @@ func TestLoadConfiguration(t *testing.T) {
 
 	expectedAliases := make(map[string]Alias)
 	expectedAliases["foo"] = Alias{"command1", 120, Git{false}}
-	expectedAliases["bar"] = Alias{"command2", 500, Git{true}}
+	expectedAliases["bar"] = Alias{"echo \"a more complex command\"", 500, Git{true}}
 	expected := Configuration{}
 	expected.Aliases = expectedAliases
 
@@ -71,6 +71,18 @@ func TestGetCommand(t *testing.T) {
 	conf.Aliases = aliases
 
 	expected := execution.Command{Name: "command1", Arguments: []string{"arg1", "arg2", "--opt1"}}
+	actual, _ := conf.getCommand("foo")
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestGetCommandWithStringArgs(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"command1 \"double quotes arg\" 'simple quote arg' third-arg --option -o", 120, Git{false}}
+	conf.Aliases = aliases
+
+	expected := execution.Command{Name: "command1", Arguments: []string{"double quotes arg", "simple quote arg", "third-arg", "--option", "-o"}}
 	actual, _ := conf.getCommand("foo")
 
 	assert.Equal(t, expected, actual)
