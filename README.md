@@ -1,8 +1,6 @@
 # TDD.sh
 
-A simple tool to enforce the TDD practice.
-
-It allows to:
+A simple tool to enforce the TDD practice. It follows principles erected by Kent Beck in _"Test Driven Development: By Example"_ and allows to:
 
 - have a simple and consistent way to launch your tests across all your projects, whatever the language
 - automatically commit when your tests are green
@@ -38,14 +36,17 @@ tdd new "a clear message that explains what I want to achieve"
 
 The message of this TDD session will be used to commit your changes.
 
-Then, start your classical TDD loop. Write a failing test, write the minimum code needed to make it pass, run all your tests, and refactor. To run your tests alias, use:
+Then, start your classical TDD loop: write a failing test, write the minimum code needed to make it pass, run all your tests, refactor and ensure all your tests are still green. The only difference, is that to run your tests you'll now use:
 
 ```bash
 tdd my_alias
 ```
 
-If your tests are green, your code is automatically committed. Great! You can now refactor or write a new failing test.
-If your tests are red and you have configured a timer for this alias, you'll receive soon a small notification telling you to try to take a smaller step.
+Where `my_alias` is the command used to launch your tests. It's defined in the configuration file, but we'll get back to that later.
+
+If after having launched `tdd my_alias`, your tests are green, then your code is automatically committed. Great! You can now refactor or write a new failing test. For both those actions, use `tdd my_alias` again. 
+
+If your tests are red and you have configured a timer for this alias, you'll receive soon a small notification encouraging you to take a smaller step.
 
 
 ### The configuration file
@@ -92,8 +93,6 @@ tdd todo "I should do this other thing"
 tdd todo "oh, something else I think about too"
 ```
 
-Please note that the purpose of this to-do list is not to store tasks that will take us months to complete. It's not an alternative to the useless `// TODO: fix this` that we can find sometimes in our codebase. Its goal is to minimize the red/green time: when the tests are failing, our only goal is to make them turn green quickly and easily. Anything that is not related to this precise goal should land in this todo list. Therefore, it should have a short lifetime; typically, one day maximum.
-
 When you are ready, which means when your tests are green, you can pick a task from this list:
 
 ```bash
@@ -120,55 +119,63 @@ tdd done
 
 ### Why committing every time tests are green is important?
 
-TODO
+I can't remember the number of times I've been lost in my developments because I didn't know exactly what I should add or not for my current commit. CTRL-Z on this file, adding this file but not that one, checking local history to understand what happened, going back and forth... Huh, this chaos is exhausting! 
 
-- stop chaos development (lost in what we have done, CTRL Z, rewrite the same thing several time, check local history etc)
-- free your mind
-- committed = the code works as expected
+Committing everytime tests are green totally frees the mind. When it's committed, that means the code works. It's simple as that. There is nothing else to remember. 
 
-### Won't this screw my git history?
+### Committing before the code has been written, won't this screw my git history?
 
-TODO
+Surprisingly, I find it's quite the opposite. The `tdd new` command forces us to explain what we want to achieve, not the how. Which is exactly what should be good a git history.
 
-- quite the opposite, the "tdd new" command forces us to explain what we want to achieve, not the how. Which is exactly what should be good a git history.
-- besides, we're doing TDD right? so why explain what we have done, after having done it. Let's apply the TDD cycle from the beginning
-- if you want to, you can still rewrite the history whenever you want
+Besides, we're doing TDD right? So why should we explain what we have done, after having done it? Let's apply the TDD cycle from the very beginning: first, we have to think about what to achieve.
 
-### Why launching a notification will help me to practice TDD?
+To end that topic, keep also in mind that, if you want or need to, you can still rewrite the git history whenever you want.
 
-TODO
+### Why launching a notification when tests have been red for too long will help me to practice TDD?
 
-- in the book "TDD by example" Kent Beck keeps talking about how small the changes should be so that we can be smoothly driven by the tests
-- sadly, "small" is vague difficult to count. The only metric I found to help me is time. When I take too much time to turn my tests green is a sign I've been taking a too big/difficult step
-- not ideal, but it works for me
-- if you're a beginner, start with a 10 minutes timer and try to reduce it week after week
+One of the most fundamental principle of TDD is to take baby steps. In the book _"Test Driven Development: By Example"_, Kent Beck can't stop talking about how small the changes should be so that we can be smoothly driven by the tests.
+
+Sadly, _small_ is a vague metric which is impossible to measure. The only metric I found helpful is _time_. When I take too much time to turn my tests green that's a sign I've been taking a too big or a too difficult step. In that case, I cancel my current code, and restart with a smaller step. 
+
+If you're a complete TDD beginner, I suggest you to start with a 10 minutes timer. Try to reduce it week by week. After a few months of practice, you should be able to use easily a ~60 seconds timer for a development environment you master. Congratulations! You are now able to take small steps!
+
+### Why using a todo list will help me to practice TDD?
+
+The purpose of this todo list is not to store tasks that will take us months to complete. It's not an alternative to the useless `// TODO: fix this` that we can find sometimes in our codebase. 
+
+Its goal is to minimize the red/green time: when the tests are failing, our only goal is to make them turn green quickly and easily. Anything that is not related to this precise goal should land in this todo list. Therefore, it should have a short lifetime; typically, one day maximum.
 
 ## Features list
 
+- handle a TODO list with
+  - ~~tdd todo : add an item in the list~~
+  - ~~tdd do : pick one item in the list, and do a `tdd new` with it~~
+  - ~~tdd done : clear the list~~
+  - tdd do: sanitize todo lists => remove empty lines
+- log properly debug/info/error, see [this library](https://www.honeybadger.io/blog/golang-logging/)
+- display execution results like:
+  - Tests pass ✅
+  - Tests do not pass ❌
+  - OK ✅ (for non-test commands)
+  - Error ❌ (for non-test commands)
+- be able to define a default alias? 
+- be able to get stats on my tdd sessions?
+- log commands, exit code and datetime to be able to have stats?
+- handle "complex" commands with `&&`, `||` or `;` => check [this parser](https://github.com/alecthomas/participle)
+- be able to choose what to add to the git index?
+- default values for configuration?
+- option `--verbose` to display the commands that are really launched, hide them otherwise
+- option `--version`?
+- use [goreleaser](https://goreleaser.com/) to build different versions and push release to Github
+- stats about download => check [github-release-stats](https://tooomm.github.io/github-release-stats/), [grev](https://hanadigital.github.io/grev/), [github-analytics](http://github-analytics.apphb.com/)
 - ~~be able to launch a test command with an alias~~
 - ~~be able to start a new tdd session (that should create an empty commit I can amend on)~~
 - ~~be able to define if I want to amend commits or not~~
 - ~~be able to define a timer (duration, bell and/or notification) when the tests have been red for too long~~
 - ~~play a sound along with the notification when tests have been red for too long~~
 - ~~reset the timer when tests are green~~
-- ~~handle a TODO list with~~
-  - ~~tdd todo : add an item in the list~~
-  - ~~tdd do : pick one item in the list, and do a `tdd new` with it~~
-  - tdd do: sanitize todo lists => remove empty lines
-  - ~~tdd done : clear the list~~
-- log properly debug/info/error, see https://www.honeybadger.io/blog/golang-logging/
-- display execution results like:
-  - Tests pass ✅
-  - Tests do not pass ❌
-  - OK ✅ (for non-test commands)
-  - Error ❌ (for non-test commands)
 - ~~display errors to users(like "alias not found" or "missing commit message" with _tdd new_)~~
 - ~~proper error message when there is no configuration file~~
-- default values for configuration
 - ~~handle all cases where configuration is incorrect =>  validate configuration file schema? or simply check at startup?~~
 - ~~be able to initialize a default config file~~
-- be able to define a default alias? 
-- be able to get stats on my tdd sessions?
-- log commands, exit code and datetime to be able to have stats?
 - ~~use a CLI framework => check https://github.com/urfave/cli or https://github.com/spf13/cobra~~ 
-- handle "complex" commands with `&&`, `||` or `;` => check https://github.com/alecthomas/participle
