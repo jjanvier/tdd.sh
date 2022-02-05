@@ -1,0 +1,40 @@
+project_name: tdd
+dist: _build
+before:
+  hooks:
+    # You may remove this if you don't use go modules.
+    - go mod tidy
+    # you may remove this if you don't need go generate
+    - go generate ./...
+env_files:
+  github_token: .github_token
+builds:
+  # what can be built on the local machine, if needed
+  - id: local
+    env:
+      - CGO_ENABLED=1
+    goos:
+      - linux
+      - windows # not sure if this works properly as I didn't install gcc-mingw-w64-x86-64 or gcc-multilib...
+    ignore:
+      - goos: linux
+        goarch: 386
+      - goos: linux
+        goarch: arm64
+archives:
+  - replacements:
+      darwin: Darwin
+      linux: Linux
+      windows: Windows
+      386: i386
+      amd64: x86_64
+checksum:
+  name_template: 'checksums.txt'
+snapshot:
+  name_template: "{{ incpatch .Version }}-next"
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^test:'

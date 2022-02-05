@@ -1,12 +1,18 @@
-build:
-	GOOS=linux GOARCH=amd64 go build -o _build/linux github.com/jjanvier/tdd
+GO_BUILDER_VERSION=latest
+PRIVATE_KEY=$(shell cat ~/.gnupg/pubring.gpg | base64)
 
-build-darwin:
-	GOOS=darwin GOARCH=amd64 go build -o _build/macos github.com/jjanvier/tdd
+release-local:
+	goreleaser release -f .goreleaser.local.yaml --rm-dist
 
-install:
-	sudo cp /usr/local/bin/tdd /usr/local/bin/tdd.bak
-	sudo mv ./_build/linux/tdd /usr/local/bin/tdd
+build-local:
+	goreleaser build -f .goreleaser.local.yaml --snapshot --rm-dist
 
-release:
-	./bin/prepare_github_package.sh
+build-gythialy:
+	docker run --rm --privileged \
+		-e PRIVATE_KEY="$(PRIVATE_KEY)" \
+		-v $(CURDIR):/golang-cross-example \
+		-v /var/run/docker.sock:/var/run/docker.sock \
+		-v $(GOPATH)/src:/go/src \
+		-w /golang-cross-example \
+		ghcr.io/gythialy/golang-cross:$(GO_BUILDER_VERSION) --snapshot --rm-dist
+

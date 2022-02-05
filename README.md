@@ -152,7 +152,7 @@ Its goal is to minimize the red/green time: when the tests are failing, our only
   - ~~tdd do : pick one item in the list, and do a `tdd new` with it~~
   - ~~tdd done : clear the list~~
   - tdd do: sanitize todo lists => remove empty lines
-- log properly debug/info/error, see [this library](https://www.honeybadger.io/blog/golang-logging/)
+- log properly debug/info/error, see [this library](https://www.honeybadger.io/blog/golang-logging/) of [this one](https://github.com/apex/log)
 - display execution results like:
   - Tests pass ✅
   - Tests do not pass ❌
