@@ -10,16 +10,18 @@ type TodoList struct {
 	Path string
 }
 
-func (list TodoList) Add(todo string) error {
+func (list TodoList) Add(todos []string) error {
 	todoFile, err := os.OpenFile(list.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	defer todoFile.Close()
 	if err != nil {
 		return err
 	}
 
-	_, err2 := todoFile.WriteString(todo + "\n")
-	if err2 != nil {
-		return err2
+	for _, todo := range todos {
+		_, err2 := todoFile.WriteString(todo + "\n")
+		if err2 != nil {
+			return err2
+		}
 	}
 
 	return nil
@@ -40,4 +42,29 @@ func (list TodoList) Clear() error {
 	defer todoFile.Close()
 
 	return err
+}
+
+func (list TodoList) Remove(index int) error {
+	items, err := list.GetItems()
+	if err != nil {
+		return err
+	}
+
+	newItems := removeItem(items, index)
+
+	err = list.Clear()
+	if err != nil {
+		return err
+	}
+
+	err = list.Add(newItems)
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+func removeItem(slice []string, index int) []string {
+	return append(slice[:index], slice[index+1:]...)
 }

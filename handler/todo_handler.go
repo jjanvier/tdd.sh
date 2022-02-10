@@ -25,7 +25,7 @@ func (handler TodoHandler) HandleDone() error {
 }
 
 func (handler TodoHandler) HandleTodo(message string) error {
-	err := handler.Todo.Add(message)
+	err := handler.Todo.Add([]string{message})
 
 	return err
 }
@@ -42,12 +42,17 @@ func (handler TodoHandler) HandleDo(stdin io.ReadCloser) (execution.ExecutionRes
 		Stdin: stdin,
 	}
 
-	_, selected, err := prompt.Run()
+	index, selected, err := prompt.Run()
 
 	if selected == "" {
 		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
 	}
 
+	if err != nil {
+		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
+	}
+
+	err = handler.Todo.Remove(index)
 	if err != nil {
 		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
 	}
