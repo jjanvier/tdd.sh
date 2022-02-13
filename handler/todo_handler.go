@@ -1,13 +1,14 @@
 package handler
 
 import (
+	"errors"
 	"github.com/jjanvier/tdd/execution"
 	"github.com/manifoldco/promptui"
 	"io"
 )
 
 type TodoHandlerI interface {
-	HandleDo(stdin io.ReadCloser) (execution.ExecutionResult, error)
+	HandleDo(stdin io.ReadCloser) error
 	HandleTodo(message string) error
 	HandleDone() error
 }
@@ -30,10 +31,10 @@ func (handler TodoHandler) HandleTodo(message string) error {
 	return err
 }
 
-func (handler TodoHandler) HandleDo(stdin io.ReadCloser) (execution.ExecutionResult, error) {
+func (handler TodoHandler) HandleDo(stdin io.ReadCloser) error {
 	todoList, err := handler.Todo.GetItems()
 	if err != nil {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
+		return err
 	}
 
 	prompt := promptui.Select{
@@ -45,17 +46,26 @@ func (handler TodoHandler) HandleDo(stdin io.ReadCloser) (execution.ExecutionRes
 	index, selected, err := prompt.Run()
 
 	if selected == "" {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
+		return err
 	}
 
 	if err != nil {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
+		return err
 	}
 
 	err = handler.Todo.Remove(index)
 	if err != nil {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{}), err
+		return err
 	}
 
-	return handler.NewHandler.HandleNew(selected)
+	res, err := handler.NewHandler.HandleNew(selected)
+	if err != nil {
+		return err
+	}
+
+	if !res.IsSuccess {
+		return errors.New("impossible to create a new TDD session")
+	}
+
+	return nil
 }

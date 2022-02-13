@@ -64,6 +64,13 @@ func TestLoadConfigurationErrorNoCommand(t *testing.T) {
 	assert.Error(t, err)
 }
 
+func TestLoadConfigurationFileNotExists(t *testing.T) {
+	_, err := LoadConfiguration("/a/file/that/does/not/exist")
+
+	assert.Error(t, err)
+	assert.Equal(t, "no configuration file found", err.Error())
+}
+
 func TestGetCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)

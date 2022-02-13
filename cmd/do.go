@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/fatih/color"
 	"github.com/jjanvier/tdd/container"
 	"os"
 
@@ -17,7 +18,14 @@ This will start a new TDD session by using this task as a commit message.
 `,
 	Args: cobra.ExactArgs(0),
 	Run: func(cmd *cobra.Command, args []string) {
-		container.DI.TodoHandler.HandleDo(os.Stdin)
+		err := container.DI.TodoHandler.HandleDo(os.Stdin)
+
+		if err == nil {
+			color.Green("✔ new TDD session created with the item picked in the todo list")
+		} else {
+			color.Red("❌ %s", err.Error())
+			os.Exit(1)
+		}
 	},
 }
 

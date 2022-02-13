@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"github.com/fatih/color"
 	"github.com/jjanvier/tdd/container"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var todoCmd = &cobra.Command{
@@ -18,7 +20,14 @@ Please note that the purpose of this to-do list is not to store tasks that will 
 	Example: "tdd todo \"hmmm... I should probably do that thing next\"",
 	Args:    cobra.ExactArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		container.DI.TodoHandler.HandleTodo(args[0])
+		err := container.DI.TodoHandler.HandleTodo(args[0])
+
+		if err == nil {
+			color.Green("✔ item added to the todo list")
+		} else {
+			color.Red("❌ %s", err.Error())
+			os.Exit(1)
+		}
 	},
 }
 

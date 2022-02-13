@@ -1,8 +1,10 @@
 package cmd
 
 import (
+	"github.com/fatih/color"
 	"github.com/jjanvier/tdd/container"
 	"github.com/spf13/cobra"
+	"os"
 )
 
 var configCmd = &cobra.Command{
@@ -10,26 +12,27 @@ var configCmd = &cobra.Command{
 	Short: "Handle the configuration file",
 	Long: `Handle the configuration file. 
 You can either initialize a new configuration file or validate an existing one.`,
-	RunE: func(cmd *cobra.Command, args []string) error {
+	Run: func(cmd *cobra.Command, args []string) {
 		init, _ := cmd.Flags().GetBool("init")
 		if init {
 			err := container.DI.ConfigHandler.HandleInit()
 			if err == nil {
-				println("Configuration file created!")
+				color.Green("✔ configuration file created")
+			} else {
+				color.Red("❌ %s", err.Error())
+				os.Exit(1)
 			}
-			return err
 		}
 
 		validate, _ := cmd.Flags().GetBool("validate")
 		if validate {
 			if container.DI.ConfigHandler.HandleValidate() {
-				println("Configuration file is valid :)")
+				color.Green("✔ configuration file is valid")
 			} else {
-				println("Configuration file is NOT valid!")
+				color.Red("❌ configuration file is not valid")
+				os.Exit(1)
 			}
 		}
-
-		return nil
 	},
 }
 

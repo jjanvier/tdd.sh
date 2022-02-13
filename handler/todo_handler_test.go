@@ -45,16 +45,14 @@ really important to do that`)
 
 	handler := _createNewHandler(todoFile.Name())
 
-	result, _ := handler.HandleDo(fakeStdin)
+	res := handler.HandleDo(fakeStdin)
 
 	actualTodo, _ := ioutil.ReadFile(todoFile.Name())
 	expectedTodo := `I should do that
 really important to do that
 `
 	assert.Equal(t, expectedTodo, string(actualTodo))
-
-	assert.Equal(t, true, result.IsSuccess)
-	assert.Equal(t, "git commit --allow-empty -m also this should be done", result.Command)
+	assert.NoError(t, res)
 }
 
 func TestHandleDone(t *testing.T) {

@@ -16,3 +16,6 @@ build-gythialy:
 		-w /golang-cross-example \
 		ghcr.io/gythialy/golang-cross:$(GO_BUILDER_VERSION) --snapshot --rm-dist
 
+install:
+	sudo cp /usr/local/bin/tdd /usr/local/bin/tdd.bak
+	sudo mv _build/local_linux_amd64/tdd /usr/local/bin/tdd

@@ -17,7 +17,7 @@ type ConfigHandler struct {
 func (handler ConfigHandler) HandleInit() error {
 	configFileExists := ConfigurationFileExists(handler.Path)
 	if configFileExists {
-		return errors.New("The configuration file \"" + handler.Path + "\" already exists.")
+		return errors.New("configuration file already exists")
 	}
 
 	configFile, err := os.OpenFile(handler.Path, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)

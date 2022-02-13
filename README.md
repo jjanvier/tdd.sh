@@ -153,11 +153,12 @@ Its goal is to minimize the red/green time: when the tests are failing, our only
   - ~~tdd done : clear the list~~
   - tdd do: sanitize todo lists => remove empty lines
 - log properly debug/info/error, see [this library](https://www.honeybadger.io/blog/golang-logging/) of [this one](https://github.com/apex/log)
-- display execution results like:
-  - Tests pass ✅
-  - Tests do not pass ❌
-  - OK ✅ (for non-test commands)
-  - Error ❌ (for non-test commands)
+- ~~display execution results like:~~
+  - ~~Tests pass ✅~~
+  - ~~Tests do not pass ❌~~
+  - ~~OK ✅ (for non-test commands)~~
+  - ~~Error ❌ (for non-test commands)~~
+- check when the test command is unknown => today we have "tests failed."
 - be able to define a default alias? 
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
@@ -166,7 +167,7 @@ Its goal is to minimize the red/green time: when the tests are failing, our only
 - default values for configuration?
 - option `--verbose` to display the commands that are really launched, hide them otherwise
 - option `--version`?
-- use [goreleaser](https://goreleaser.com/) to build different versions and push release to Github
+- ~~use [goreleaser](https://goreleaser.com/) to build different versions and push release to Github~~
 - stats about download => check [github-release-stats](https://tooomm.github.io/github-release-stats/), [grev](https://hanadigital.github.io/grev/), [github-analytics](http://github-analytics.apphb.com/)
 - ~~be able to launch a test command with an alias~~
 - ~~be able to start a new tdd session (that should create an empty commit I can amend on)~~
