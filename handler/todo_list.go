@@ -34,7 +34,9 @@ func (list TodoList) GetItems() ([]string, error) {
 		return []string{}, err
 	}
 
-	return strings.Split(string(todoContent), "\n"), nil
+	items := strings.Split(string(todoContent), "\n")
+
+	return removeEmptyStringsFromSlice(items), nil
 }
 
 func (list TodoList) Clear() error {
@@ -50,7 +52,7 @@ func (list TodoList) Remove(index int) error {
 		return err
 	}
 
-	newItems := removeItem(items, index)
+	newItems := removeItemFromSlice(items, index)
 
 	err = list.Clear()
 	if err != nil {
@@ -65,6 +67,17 @@ func (list TodoList) Remove(index int) error {
 	return err
 }
 
-func removeItem(slice []string, index int) []string {
+func removeItemFromSlice(slice []string, index int) []string {
 	return append(slice[:index], slice[index+1:]...)
+}
+
+func removeEmptyStringsFromSlice(slice []string) []string {
+	var result []string
+	for _, str := range slice {
+		if strings.TrimSpace(str) != "" {
+			result = append(result, str)
+		}
+	}
+
+	return result
 }
