@@ -66,8 +66,27 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	handler := _createErrorAliasHandler(center)
 	result, _ := handler.HandleAlias(conf, "foo")
 
-	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
+	assert.Equal(t, "go test -v", result.Command)
 	assert.Equal(t, false, result.IsSuccess)
+	center.AssertExpectations(t)
+}
+
+func TestHandleAliasCommandWhenCommandDoNotExist(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"doesnotexit", 120, Git{false}}
+	conf.Aliases = aliases
+
+	center := new(notificationsCenterMock)
+	center.On("Reset").Once()
+	center.AssertNotCalled(t, "NotifyWithDelay")
+
+	handler := _createUnknownCommandErrorAliasHandler(center)
+	result, err := handler.HandleAlias(conf, "foo")
+
+	assert.Equal(t, "doesnotexit", result.Command)
+	assert.Equal(t, false, result.IsSuccess)
+	assert.IsType(t, &execution.UnknownCommandError{}, err)
 	center.AssertExpectations(t)
 }
 
@@ -81,6 +100,14 @@ func _createSuccessAliasHandler(center *notificationsCenterMock) AliasHandler {
 
 func _createErrorAliasHandler(center *notificationsCenterMock) AliasHandler {
 	executor := new(execution.ErrorCommandExecutorMock)
+	commandFactory := execution.CommandFactory{}
+	executionResultFactory := execution.ExecutionResultFactory{}
+
+	return AliasHandler{executor, commandFactory, executionResultFactory, center}
+}
+
+func _createUnknownCommandErrorAliasHandler(center *notificationsCenterMock) AliasHandler {
+	executor := new(execution.UnknownCommandExecutorMock)
 	commandFactory := execution.CommandFactory{}
 	executionResultFactory := execution.ExecutionResultFactory{}
 

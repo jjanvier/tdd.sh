@@ -17,7 +17,17 @@ func TestExecuteWithOutput(t *testing.T) {
 func TestExecuteWithOutputOnError(t *testing.T) {
 	cmd := Command{"ls", []string{"/this/does/not/exist"}}
 	executor := CommandExecutor{}
-	assert.Error(t, executor.ExecuteWithOutput(cmd))
+	err := executor.ExecuteWithOutput(cmd)
+	assert.Error(t, err)
+	assert.IsType(t, &CommandExecutionError{cmd}, err)
+}
+
+func TestExecuteWithOutputOnUnknownCommand(t *testing.T) {
+	cmd := Command{"doesnotexit", []string{}}
+	executor := CommandExecutor{}
+	err := executor.ExecuteWithOutput(cmd)
+	assert.Error(t, err)
+	assert.IsType(t, &UnknownCommandError{cmd}, err)
 }
 
 // TODO: not output in the test results would be better

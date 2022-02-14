@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"errors"
 	"github.com/jjanvier/tdd/execution"
 	"github.com/jjanvier/tdd/notification"
 )
@@ -32,18 +33,22 @@ func (handler AliasHandler) HandleAlias(conf Configuration, alias string) (execu
 
 	handler.NotificationsCenter.Reset(alias)
 
-	if handler.Executor.ExecuteWithOutput(testCmd) != nil {
+	if err := handler.Executor.ExecuteWithOutput(testCmd); err != nil {
 		timer, _ := conf.getTimer(alias)
-		handler.NotificationsCenter.NotifyWithDelay(alias, timer, notificationMessage)
-		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd, gitAddCmd, gitCommitCmd}), nil
+		var unknownCommandError *execution.UnknownCommandError
+		if !errors.As(err, &unknownCommandError) {
+			handler.NotificationsCenter.NotifyWithDelay(alias, timer, notificationMessage)
+		}
+
+		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd}), err
 	}
 
 	if err := handler.Executor.ExecuteWithOutput(gitAddCmd); err != nil {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd, gitAddCmd}), err
+		return handler.ExecutionResultFactory.Failure([]execution.Command{gitAddCmd}), err
 	}
 
 	if err := handler.Executor.ExecuteWithOutput(gitCommitCmd); err != nil {
-		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd, gitAddCmd, gitCommitCmd}), err
+		return handler.ExecutionResultFactory.Failure([]execution.Command{gitCommitCmd}), err
 	}
 
 	return handler.ExecutionResultFactory.Success([]execution.Command{testCmd, gitAddCmd, gitCommitCmd}), nil
