@@ -26,14 +26,15 @@ func TestHandleAliasCommandWhenTestsPass(t *testing.T) {
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
-	center.On("Reset").Once()
+	center.On("Reset")
 
 	handler := _createSuccessAliasHandler(center)
 	result, _ := handler.HandleAlias(conf, "foo")
 
 	assert.Equal(t, "go test -v && git add . && git commit --reuse-message=HEAD", result.Command)
 	assert.Equal(t, true, result.IsSuccess)
-	center.AssertExpectations(t)
+
+	center.AssertNumberOfCalls(t, "Reset", 1)
 }
 
 func TestHandleAliasCommandWhenTestsPassAndCommitsAreAmended(t *testing.T) {
@@ -43,14 +44,14 @@ func TestHandleAliasCommandWhenTestsPassAndCommitsAreAmended(t *testing.T) {
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
-	center.On("Reset").Once()
+	center.On("Reset")
 
 	handler := _createSuccessAliasHandler(center)
 	result, _ := handler.HandleAlias(conf, "foo")
 
 	assert.Equal(t, "go test -v && git add . && git commit --amend --no-edit", result.Command)
 	assert.Equal(t, true, result.IsSuccess)
-	center.AssertExpectations(t)
+	center.AssertNumberOfCalls(t, "Reset", 1)
 }
 
 func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
@@ -60,15 +61,16 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
-	center.On("Reset").Once()
-	center.On("NotifyWithDelay").Once()
+	center.On("Reset")
+	center.On("NotifyWithDelay")
 
 	handler := _createErrorAliasHandler(center)
 	result, _ := handler.HandleAlias(conf, "foo")
 
 	assert.Equal(t, "go test -v", result.Command)
 	assert.Equal(t, false, result.IsSuccess)
-	center.AssertExpectations(t)
+	center.AssertNumberOfCalls(t, "Reset", 1)
+	center.AssertNumberOfCalls(t, "NotifyWithDelay", 1)
 }
 
 func TestHandleAliasCommandWhenCommandDoNotExist(t *testing.T) {
@@ -78,8 +80,7 @@ func TestHandleAliasCommandWhenCommandDoNotExist(t *testing.T) {
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
-	center.On("Reset").Once()
-	center.AssertNotCalled(t, "NotifyWithDelay")
+	center.On("Reset")
 
 	handler := _createUnknownCommandErrorAliasHandler(center)
 	result, err := handler.HandleAlias(conf, "foo")
@@ -87,7 +88,8 @@ func TestHandleAliasCommandWhenCommandDoNotExist(t *testing.T) {
 	assert.Equal(t, "doesnotexit", result.Command)
 	assert.Equal(t, false, result.IsSuccess)
 	assert.IsType(t, &execution.UnknownCommandError{}, err)
-	center.AssertExpectations(t)
+	center.AssertNumberOfCalls(t, "Reset", 1)
+	center.AssertNumberOfCalls(t, "NotifyWithDelay", 0)
 }
 
 func _createSuccessAliasHandler(center *notificationsCenterMock) AliasHandler {
