@@ -37,5 +37,5 @@ func TestCreateGitCommitAmend(t *testing.T) {
 func TestCreateNotifyCommand(t *testing.T) {
 	factory := CommandFactory{}
 	cmd := factory.CreateNotify(25, "my message")
-	assert.Contains(t, cmd.String(), " notify 25 \"my message\"")
+	assert.Contains(t, cmd.String(), " notify 25 my message")
 }

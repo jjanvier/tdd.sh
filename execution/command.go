@@ -30,7 +30,7 @@ func (factory CommandFactory) CreateGitCommitAmend() Command {
 }
 
 func (factory CommandFactory) CreateNotify(delay int, message string) Command {
-	return Command{Name: os.Args[0], Arguments: []string{"notify", strconv.Itoa(delay), strconv.Quote(message)}}
+	return Command{Name: os.Args[0], Arguments: []string{"notify", strconv.Itoa(delay), message}}
 }
 
 func (cmd Command) String() string {

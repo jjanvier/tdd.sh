@@ -1,18 +1,24 @@
 package handler
 
 import (
+	"embed"
 	"github.com/faiface/beep"
 	"github.com/faiface/beep/speaker"
 	"github.com/faiface/beep/vorbis"
 	"github.com/gen2brain/beeep"
+	"io/fs"
+	"io/ioutil"
 	"os"
-	"path/filepath"
 	"time"
 )
 
 const title = "TDD.sh"
 const icon = "assets/logo.png"
 const bell = "assets/bell.ogg"
+
+// assets present in assets/* are embedded in a local filesystem
+// see https://pkg.go.dev/embed@master and main.go
+var Assets embed.FS
 
 type NotifyHandlerI interface {
 	HandleNotify(delay int, message string) error
@@ -23,11 +29,11 @@ type NotifyHandler struct{}
 func (handler NotifyHandler) HandleNotify(delay int, message string) error {
 	wait(delay)
 
-	iconPath, _ := filepath.Abs(icon)
-	displayNotification(message, iconPath)
+	iconData, _ := Assets.ReadFile(icon)
+	displayNotification(message, iconData)
 
-	bellPath, _ := filepath.Abs(bell)
-	playBell(bellPath)
+	bellFile, _ := Assets.Open(bell)
+	playBell(bellFile)
 
 	return nil
 }
@@ -36,13 +42,19 @@ func wait(delay int) {
 	time.Sleep(time.Duration(delay) * time.Second)
 }
 
-func displayNotification(message string, iconPath string) {
-	beeep.Notify(title, message, iconPath)
+// beeep.Notify wants a path of file for the icon
+// our icon file is embedded in the binary's filesystem, which means we can't access it from TDD.sh's host
+// that's why we create a temporary icon file on the host
+func displayNotification(message string, iconFileContent []byte) {
+	tmpIconFile := createTmpIconFile(iconFileContent)
+	defer tmpIconFile.Close()
+	defer os.Remove(tmpIconFile.Name())
+
+	beeep.Notify(title, message, tmpIconFile.Name())
 }
 
 // see the tutorial https://github.com/faiface/beep/wiki/Hello,-Beep! to understand how it works
-func playBell(bellPath string) {
-	bell, _ := os.Open(bellPath)
+func playBell(bell fs.File) {
 	defer bell.Close()
 
 	streamer, format, _ := vorbis.Decode(bell)
@@ -56,4 +68,11 @@ func playBell(bellPath string) {
 	})))
 
 	<-done
+}
+
+func createTmpIconFile(iconContent []byte) *os.File {
+	tmpFile, _ := ioutil.TempFile(os.TempDir(), "tddshicon-")
+	tmpFile.Write(iconContent)
+
+	return tmpFile
 }
