@@ -166,6 +166,7 @@ Its goal is to minimize the red/green time: when the tests are failing, our only
 - log commands, exit code and datetime to be able to have stats?
 - handle "complex" commands with `&&`, `||` or `;` => check [this parser](https://github.com/alecthomas/participle)
 - ~~be able to choose what to add to the git index?~~
+- ~~handle live output for test aliases~~
 - default values for configuration?
 - option `--verbose` to display the commands that are really launched, hide them otherwise
 - option `--version`?

@@ -1,12 +1,14 @@
 package execution
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"os/exec"
 )
 
 type CommandExecutorI interface {
-	ExecuteWithOutput(cmd Command) error
+	ExecuteWithLiveOutput(cmd Command) error
 	Execute(cmd Command) error
 	ExecuteBackground(cmd Command) (int, error)
 }
@@ -29,17 +31,24 @@ func (e *CommandExecutionError) Error() string {
 	return fmt.Sprintf("error while executing the command \"%s\"", e.command.String())
 }
 
-// TODO: handle live output as explained here https://stackoverflow.com/questions/37091316/how-to-get-the-realtime-output-for-a-shell-command-in-golang
-func (executor CommandExecutor) ExecuteWithOutput(cmd Command) error {
+func (executor CommandExecutor) ExecuteWithLiveOutput(cmd Command) error {
 	_, err := exec.LookPath(cmd.Name)
 	if err != nil {
 		return &UnknownCommandError{cmd}
 	}
 
 	fmt.Println(cmd)
-	out, err := exec.Command(cmd.Name, cmd.Arguments...).CombinedOutput()
-	fmt.Printf("%s\n", out)
+	realCmd := exec.Command(cmd.Name, cmd.Arguments...)
 
+	stdout, _ := realCmd.StdoutPipe()
+	err = realCmd.Start()
+	if err != nil {
+		return &CommandExecutionError{cmd}
+	}
+
+	displayLiveOutput(stdout)
+
+	err = realCmd.Wait()
 	if err != nil {
 		return &CommandExecutionError{cmd}
 	}
@@ -58,11 +67,21 @@ func (executor CommandExecutor) Execute(cmd Command) error {
 }
 
 func (executor CommandExecutor) ExecuteBackground(cmd Command) (int, error) {
-	c := exec.Command(cmd.Name, cmd.Arguments...)
-	err := c.Start()
+	realCmd := exec.Command(cmd.Name, cmd.Arguments...)
+	err := realCmd.Start()
 	if err != nil {
 		return -1, err
 	}
 
-	return c.Process.Pid, nil
+	return realCmd.Process.Pid, nil
+}
+
+// handle live output as explained here https://stackoverflow.com/questions/37091316/how-to-get-the-realtime-output-for-a-shell-command-in-golang
+func displayLiveOutput(stdout io.ReadCloser) {
+	scanner := bufio.NewScanner(stdout)
+	scanner.Split(bufio.ScanLines)
+	for scanner.Scan() {
+		out := scanner.Text()
+		fmt.Println(out)
+	}
 }

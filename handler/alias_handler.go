@@ -37,7 +37,7 @@ func (handler AliasHandler) HandleAlias(conf Configuration, alias string) (execu
 
 	handler.NotificationsCenter.Reset(alias)
 
-	if err := handler.Executor.ExecuteWithOutput(testCmd); err != nil {
+	if err := handler.Executor.ExecuteWithLiveOutput(testCmd); err != nil {
 		timer, _ := conf.getTimer(alias)
 		var unknownCommandError *execution.UnknownCommandError
 		if errors.As(err, &unknownCommandError) {
@@ -48,11 +48,11 @@ func (handler AliasHandler) HandleAlias(conf Configuration, alias string) (execu
 		return handler.ExecutionResultFactory.Failure([]execution.Command{testCmd}), nil
 	}
 
-	if err := handler.Executor.ExecuteWithOutput(gitAddCmd); err != nil {
+	if err := handler.Executor.ExecuteWithLiveOutput(gitAddCmd); err != nil {
 		return handler.ExecutionResultFactory.Failure([]execution.Command{gitAddCmd}), err
 	}
 
-	if err := handler.Executor.ExecuteWithOutput(gitCommitCmd); err != nil {
+	if err := handler.Executor.ExecuteWithLiveOutput(gitCommitCmd); err != nil {
 		return handler.ExecutionResultFactory.Failure([]execution.Command{gitCommitCmd}), err
 	}
 

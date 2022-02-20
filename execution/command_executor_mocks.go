@@ -11,7 +11,7 @@ type SuccessCommandExecutorMock struct {
 	mock.Mock
 }
 
-func (executor SuccessCommandExecutorMock) ExecuteWithOutput(cmd Command) error {
+func (executor SuccessCommandExecutorMock) ExecuteWithLiveOutput(cmd Command) error {
 	return nil
 }
 
@@ -27,7 +27,7 @@ type ErrorCommandExecutorMock struct {
 	mock.Mock
 }
 
-func (executor ErrorCommandExecutorMock) ExecuteWithOutput(cmd Command) error {
+func (executor ErrorCommandExecutorMock) ExecuteWithLiveOutput(cmd Command) error {
 	return errors.New("an error occurred during the execution of the command")
 }
 
@@ -43,7 +43,7 @@ type UnknownCommandExecutorMock struct {
 	mock.Mock
 }
 
-func (executor UnknownCommandExecutorMock) ExecuteWithOutput(cmd Command) error {
+func (executor UnknownCommandExecutorMock) ExecuteWithLiveOutput(cmd Command) error {
 	return &UnknownCommandError{Command{"doesnotexit", []string{}}}
 }
 

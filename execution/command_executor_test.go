@@ -10,14 +10,14 @@ import (
 func TestExecuteWithOutput(t *testing.T) {
 	cmd := Command{"echo", []string{"foo"}}
 	executor := CommandExecutor{}
-	assert.NoError(t, executor.ExecuteWithOutput(cmd))
+	assert.NoError(t, executor.ExecuteWithLiveOutput(cmd))
 }
 
 // TODO: not output in the test results would be better
 func TestExecuteWithOutputOnError(t *testing.T) {
 	cmd := Command{"ls", []string{"/this/does/not/exist"}}
 	executor := CommandExecutor{}
-	err := executor.ExecuteWithOutput(cmd)
+	err := executor.ExecuteWithLiveOutput(cmd)
 	assert.Error(t, err)
 	assert.IsType(t, &CommandExecutionError{cmd}, err)
 }
@@ -25,7 +25,7 @@ func TestExecuteWithOutputOnError(t *testing.T) {
 func TestExecuteWithOutputOnUnknownCommand(t *testing.T) {
 	cmd := Command{"doesnotexit", []string{}}
 	executor := CommandExecutor{}
-	err := executor.ExecuteWithOutput(cmd)
+	err := executor.ExecuteWithLiveOutput(cmd)
 	assert.Error(t, err)
 	assert.IsType(t, &UnknownCommandError{cmd}, err)
 }
