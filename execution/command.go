@@ -13,8 +13,18 @@ type Command struct {
 
 type CommandFactory struct{}
 
-func (factory CommandFactory) CreateGitAdd() Command {
-	return Command{"git", []string{"add", "."}}
+func (factory CommandFactory) CreateGitAdd(pathSpec string) Command {
+	if pathSpec == "." {
+		return Command{"git", []string{"add", "."}}
+	}
+
+	// quite tricky here...
+	// if we want something like "git add -- *.php doc/*", we need "*.php" and "doc/*"
+	// to be treated as 2 different arguments of the git command
+	// otherwise, we'll get something like "pathspec did not match any files"
+	pathSpecs := strings.Fields(pathSpec)
+
+	return Command{"git", append([]string{"add", "--"}, pathSpecs...)}
 }
 
 func (factory CommandFactory) CreateGitCommit() Command {

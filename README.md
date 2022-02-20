@@ -75,10 +75,12 @@ aliases:
         command: docker-compose run --rm php vendor/bin/phpspec run -v
         git:
             amend: true # commits will be amended when tests are green
+            add: "*.php doc/*" # all PHP files and all files present in the "doc" folder will be added to the index 
         timer: 60 # you'll receive a small notification if your steps are still red after 60 seconds
     ut_go: # another alias
         command: go test ./... -v
-        # if no "git" key is configured, commits won't be amended: the previous message will be reused
+        # if no "git.amend" key is configured, commits won't be amended: the previous message will be reused
+        # if no "git.add" key is configured, all files will be added to the index. It's equivalent to "git add ."
         # if no "timer" key is defined, no notification will pop
 ```
 
@@ -158,12 +160,12 @@ Its goal is to minimize the red/green time: when the tests are failing, our only
   - ~~Tests do not pass ❌~~
   - ~~OK ✅ (for non-test commands)~~
   - ~~Error ❌ (for non-test commands)~~
-- check when the test command is unknown => today we have "tests failed."
+- ~~check when the test command is unknown => today we have "tests failed."~~
 - be able to define a default alias? 
 - be able to get stats on my tdd sessions?
 - log commands, exit code and datetime to be able to have stats?
 - handle "complex" commands with `&&`, `||` or `;` => check [this parser](https://github.com/alecthomas/participle)
-- be able to choose what to add to the git index?
+- ~~be able to choose what to add to the git index?~~
 - default values for configuration?
 - option `--verbose` to display the commands that are really launched, hide them otherwise
 - option `--version`?

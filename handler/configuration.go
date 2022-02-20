@@ -16,10 +16,12 @@ const defaultConfigurationFile = `aliases:
         command: echo "change me"
         git:
             amend: true # commits will be amended when tests are green
+            add: "*.go doc/*" # all go files and all files present in the "doc" folder will be added to the index 
         timer: 60 # you'll receive a small notification if your steps are still red after 60 seconds
     another-alias:
         command: echo "change me too"
-        # if no "git" key is configured, commits won't be amended: the previous message will be reused
+        # if no "git.amend" key is configured, commits won't be amended: the previous message will be reused
+        # if no "git.add" key is configured, all files will be added to the index. It's equivalent to "git add ."
         # if no "timer" key is defined, no notification will pop
 `
 
@@ -33,6 +35,7 @@ func (e *AliasNotFoundError) Error() string {
 
 type Git struct {
 	Amend bool
+	Add   string
 }
 
 type Alias struct {
@@ -63,6 +66,13 @@ func LoadConfiguration(path string) (Configuration, error) {
 		return Configuration{}, errors.New("invalid configuration, please fix your configuration file")
 	}
 
+	for aliasKey, alias := range conf.Aliases {
+		if alias.Git.Add == "" {
+			alias.Git.Add = "."
+			conf.Aliases[aliasKey] = alias
+		}
+	}
+
 	if len(conf.Aliases) == 0 {
 		return Configuration{}, errors.New("no alias found, please fix your configuration file")
 	}
@@ -70,7 +80,7 @@ func LoadConfiguration(path string) (Configuration, error) {
 	return conf, nil
 }
 
-func (conf Configuration) getCommand(alias string) (execution.Command, error) {
+func (conf Configuration) getAliasCommand(alias string) (execution.Command, error) {
 	if _, ok := conf.Aliases[alias]; !ok {
 		return execution.Command{}, &AliasNotFoundError{Alias: alias}
 	}
@@ -82,6 +92,18 @@ func (conf Configuration) getCommand(alias string) (execution.Command, error) {
 	}
 
 	return execution.Command{Name: args[0], Arguments: args[1:]}, nil
+}
+
+func (conf Configuration) getGitAddCommand(alias string) (execution.Command, error) {
+	if _, ok := conf.Aliases[alias]; !ok {
+		return execution.Command{}, &AliasNotFoundError{Alias: alias}
+	}
+
+	add := conf.Aliases[alias].Git.Add
+	commandFactory := execution.CommandFactory{}
+
+	return commandFactory.CreateGitAdd(add), nil
+
 }
 
 func (conf Configuration) shouldAmendCommits(alias string) (bool, error) {

@@ -18,6 +18,9 @@ func TestLoadConfiguration(t *testing.T) {
     timer: 500
     git:
       amend: true
+      add: "*.php doc/*"
+  baz:
+    command: simplestalias
 `
 
 	confFile := helper.CreateTmpFile(confContent)
@@ -27,8 +30,9 @@ func TestLoadConfiguration(t *testing.T) {
 	actual, _ := LoadConfiguration(confFile.Name())
 
 	expectedAliases := make(map[string]Alias)
-	expectedAliases["foo"] = Alias{"command1", 120, Git{false}}
-	expectedAliases["bar"] = Alias{"echo \"a more complex command\"", 500, Git{true}}
+	expectedAliases["foo"] = Alias{"command1", 120, Git{false, "."}}
+	expectedAliases["bar"] = Alias{"echo \"a more complex command\"", 500, Git{true, "*.php doc/*"}}
+	expectedAliases["baz"] = Alias{"simplestalias", 0, Git{false, "."}}
 	expected := Configuration{}
 	expected.Aliases = expectedAliases
 
@@ -74,11 +78,11 @@ func TestLoadConfigurationFileNotExists(t *testing.T) {
 func TestGetCommand(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	expected := execution.Command{Name: "command1", Arguments: []string{"arg1", "arg2", "--opt1"}}
-	actual, _ := conf.getCommand("foo")
+	actual, _ := conf.getAliasCommand("foo")
 
 	assert.Equal(t, expected, actual)
 }
@@ -86,18 +90,18 @@ func TestGetCommand(t *testing.T) {
 func TestGetCommandWithStringArgs(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 \"double quotes arg\" 'simple quote arg' third-arg --option -o", 120, Git{false}}
+	aliases["foo"] = Alias{"command1 \"double quotes arg\" 'simple quote arg' third-arg --option -o", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	expected := execution.Command{Name: "command1", Arguments: []string{"double quotes arg", "simple quote arg", "third-arg", "--option", "-o"}}
-	actual, _ := conf.getCommand("foo")
+	actual, _ := conf.getAliasCommand("foo")
 
 	assert.Equal(t, expected, actual)
 }
 
 func TestGetCommandAliasNotFound(t *testing.T) {
 	conf := Configuration{}
-	_, actualError := conf.getCommand("foo")
+	_, actualError := conf.getAliasCommand("foo")
 
 	assert.Error(t, actualError)
 }
@@ -105,8 +109,8 @@ func TestGetCommandAliasNotFound(t *testing.T) {
 func TestShouldAmendCommits(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
-	aliases["bar"] = Alias{"command2", 60, Git{true}}
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false, "."}}
+	aliases["bar"] = Alias{"command2", 60, Git{true, "."}}
 	conf.Aliases = aliases
 
 	notAmended, _ := conf.shouldAmendCommits("foo")
@@ -126,7 +130,7 @@ func TestShouldAmendCommitsAliasNotFound(t *testing.T) {
 func TestGetTimer(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false}}
+	aliases["foo"] = Alias{"command1 arg1 arg2 --opt1", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	actualTimer, _ := conf.getTimer("foo")
@@ -146,4 +150,24 @@ func TestFileExists(t *testing.T) {
 
 	assert.True(t, ConfigurationFileExists(confFile.Name()))
 	assert.False(t, ConfigurationFileExists("/this/one/does/not/exist"))
+}
+
+func TestGetGitAddCommand(t *testing.T) {
+	conf := Configuration{}
+	aliases := make(map[string]Alias)
+	aliases["foo"] = Alias{"command1", 120, Git{false, "*.php doc/*"}}
+	conf.Aliases = aliases
+
+	commandFactory := execution.CommandFactory{}
+	expected := commandFactory.CreateGitAdd("*.php doc/*")
+	actual, _ := conf.getGitAddCommand("foo")
+
+	assert.Equal(t, expected, actual)
+}
+
+func TestGetGitAddCommandAliasNotFound(t *testing.T) {
+	conf := Configuration{}
+	_, actualError := conf.getGitAddCommand("foo")
+
+	assert.Error(t, actualError)
 }

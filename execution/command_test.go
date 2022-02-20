@@ -10,9 +10,15 @@ func TestString(t *testing.T) {
 	assert.Equal(t, "ls -al -h", cmd.String())
 }
 
-func TestCreateGitAddCommand(t *testing.T) {
+func TestCreateGitAdd(t *testing.T) {
 	factory := CommandFactory{}
-	cmd := factory.CreateGitAdd()
+	cmd := factory.CreateGitAdd("*.php doc/*")
+	assert.Equal(t, "git add -- *.php doc/*", cmd.String())
+}
+
+func TestCreateGitAddSimple(t *testing.T) {
+	factory := CommandFactory{}
+	cmd := factory.CreateGitAdd(".")
 	assert.Equal(t, "git add .", cmd.String())
 }
 

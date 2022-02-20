@@ -22,7 +22,7 @@ func (center *notificationsCenterMock) Reset(alias string) {
 func TestHandleAliasCommandWhenTestsPass(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"go test -v", 120, Git{false}}
+	aliases["foo"] = Alias{"go test -v", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
@@ -40,7 +40,7 @@ func TestHandleAliasCommandWhenTestsPass(t *testing.T) {
 func TestHandleAliasCommandWhenTestsPassAndCommitsAreAmended(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"go test -v", 120, Git{true}}
+	aliases["foo"] = Alias{"go test -v", 120, Git{true, "."}}
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
@@ -57,7 +57,7 @@ func TestHandleAliasCommandWhenTestsPassAndCommitsAreAmended(t *testing.T) {
 func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"go test -v", 120, Git{false}}
+	aliases["foo"] = Alias{"go test -v", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
@@ -77,7 +77,7 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 func TestHandleAliasCommandWhenCommandDoNotExist(t *testing.T) {
 	conf := Configuration{}
 	aliases := make(map[string]Alias)
-	aliases["foo"] = Alias{"doesnotexit", 120, Git{false}}
+	aliases["foo"] = Alias{"doesnotexit", 120, Git{false, "."}}
 	conf.Aliases = aliases
 
 	center := new(notificationsCenterMock)
