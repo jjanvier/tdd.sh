@@ -54,4 +54,4 @@ Maybe an alternative to look at is [gccgo](https://go.dev/doc/install/gccgo).
 
 TODO
 - use only one Dockerized toolchain to build all the packages would be the best
-- that would also allow to use only one `.goreleaser.yaml` config file
+- that would also allow using only one `.goreleaser.yaml` config file
