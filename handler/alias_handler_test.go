@@ -65,10 +65,11 @@ func TestHandleAliasCommandWhenTestsDoNotPass(t *testing.T) {
 	center.On("NotifyWithDelay")
 
 	handler := _createErrorAliasHandler(center)
-	result, _ := handler.HandleAlias(conf, "foo")
+	result, err := handler.HandleAlias(conf, "foo")
 
 	assert.Equal(t, "go test -v", result.Command)
 	assert.Equal(t, false, result.IsSuccess)
+	assert.Nil(t, err)
 	center.AssertNumberOfCalls(t, "Reset", 1)
 	center.AssertNumberOfCalls(t, "NotifyWithDelay", 1)
 }
