@@ -12,9 +12,10 @@ var rootCmd = &cobra.Command{
 	Long: `A simple tool to enforce the TDD practice. 
 
 It follows principles erected by Kent Beck in "Test Driven Development: By Example" and allows to:
-- have a simple and consistent way to launch your tests across all your projects, whatever the language
-- automatically commit when your tests are green
-- launch a notification when your tests have been red for too long
+- reduce the cognitive load
+	- by having a simple and consistent way to launch your tests across all your projects, whatever the language and technical stack
+	- by automatically committing when your tests are green
+- reduce the feedback loop by launching a notification when your tests have been red for too long
 - stay focused in the red/green/refactor loop by using a todo list
 `,
 }

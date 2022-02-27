@@ -8,15 +8,21 @@ A simple tool to enforce the TDD practice. It follows principles erected by Kent
 - **reduce the feedback loop** by launching a notification when your tests have been red for too long
 - **stay focused** in the red/green/refactor loop by using a todo list
 
+_TDD.sh_ is cross-platform, open source and granted under the [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.en.html).
+
+## Feedback
+
+_TDD.sh_ is in alpha stage. There are probably some small bugs, shortcomings and a lot to enhance. Any feedback is welcome. You can create a ticket on [Github](https://github.com/jjanvier/tdd.sh/issues), direct message me on [Twitter](https://twitter.com/jjanvier_) or [email](mailto:j.janvier@gmail.com) me.
+
 ## How to install
 
 ### Requirements
 
-Nothing particular is required. _TDD.sh_ embeds all it needs in its binary.
+It requires `git` to be accessible from the `$PATH`. Nothing else particular is required. _TDD.sh_ embeds all it needs in its binary.
 
 ### Installation
 
-Download the latest binary that suits your computer, which is available at [tdd-dot-sh.zip](https://github.com/jjanvier/tdd.sh/releases/latest/download/tdd-dot-sh.zip). Unzip it and install the binary in a directory recognized by your `$PATH` variable. For instance, if you're a _MacOs_ or a _Linux_ user, you can move the `tdd` binary to `/usr/local/bin/`.
+[Download](https://github.com/jjanvier/tdd.sh/releases/latest) the latest binary that suits your computer. Unzip it and install the binary in a directory recognized by your `$PATH` variable. For instance, if you're a _MacOs_ or a _Linux_ user, you can move the `tdd` binary to `/usr/local/bin/`.
 
 Yippee, you are now ready to use the `tdd` command!
 
