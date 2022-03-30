@@ -1,12 +1,14 @@
 # TDD.sh
 
-A simple tool to enforce the TDD practice. It follows principles erected by Kent Beck in _"Test Driven Development: By Example"_ and allows to:
+A simple CLI tool to enforce the TDD practice. It follows principles erected by Kent Beck in _"Test Driven Development: By Example"_ and allows to:
 
 - **reduce the cognitive load**
   - by having a simple and consistent way to launch your tests across all your projects, whatever the language and technical stack
   - by automatically committing when your tests are green
 - **reduce the feedback loop** by launching a notification when your tests have been red for too long
 - **stay focused** in the red/green/refactor loop by using a todo list
+
+_TDD.sh_ can be used by beginners to help them learn TDD as well as by advanced users to provide them a smooth development workflow.
 
 _TDD.sh_ is cross-platform, open source and granted under the [GPL-3.0 License](https://www.gnu.org/licenses/gpl-3.0.en.html).
 
@@ -137,7 +139,7 @@ I can't remember the number of times I've been lost in my developments because I
 
 Committing everytime tests are green totally frees the mind. When it's committed, that means the code works. It's simple as that. There is nothing else to remember. 
 
-### Committing before the code has been written, won't this screw my git history?
+### Committing automatically the code, won't this screw my git history?
 
 Surprisingly, I find it's quite the opposite. The `tdd new` command forces us to explain what we want to achieve, not the how. Which is exactly what should be good a git history.
 
